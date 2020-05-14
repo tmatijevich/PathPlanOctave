@@ -61,11 +61,11 @@ function [soln, valid] = Kin_GetAccInTimespan(tdiff, dx, v0, vf, vmin, vmax)
 		if !validRoots
 			printf("Kin_GetAccInTimespan call invalid: Imaginary roots for case %d\n", soln.cs); valid = false; return;
 		else
-			if (solnRoots.n == 1) && (solnRoots.r1 > 0.0)
+			if (solnRoots.r1 > 0.0) && (solnRoots.r1 == solnRoots.r2)
 				soln.a = solnRoots.r1;
-			elseif (solnRoots.n == 2) && (solnRoots.r1 > 0.0) && (solnRoots.r2 < 0.0)
+			elseif (solnRoots.r1 > 0.0) && (solnRoots.r2 < 0.0)
 				soln.a = solnRoots.r1;
-			elseif (solnRoots.n == 2) && (solnRoots.r1 < 0.0) && (solnRoots.r2 > 0.0)
+			elseif (solnRoots.r1 < 0.0) && (solnRoots.r2 > 0.0)
 				soln.a = solnRoots.r2;
 			else
 				printf("Kin_GetAccInTimespan call invalid: Invalid roots for case %d\n", soln.cs); valid = false; return;

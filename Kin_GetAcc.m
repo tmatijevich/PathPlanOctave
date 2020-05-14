@@ -66,8 +66,6 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 		[solnRoots, validRoots] = Math_2ndOrderRoots(p2,p1,p0);
 		if !validRoots
 			printf("Kin_GetAcc call invalid: Imaginary roots for case %d\n", soln.cs); valid = false; return;
-		elseif solnRoots.n < 2
-			printf("Kin_GetAcc call invalid: Invalid roots for case %d\n", soln.cs); valid = false; return;
 		else
 			if soln.cs == 10
 				soln.v = max(solnRoots.r1, solnRoots.r2);

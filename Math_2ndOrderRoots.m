@@ -8,10 +8,10 @@ function [soln, valid] = Math_2ndOrderRoots(p2, p1, p0)
 	RootsO2 = roots([p2, p1, p0]);
 	if isreal(RootsO2(1))
 		soln.r1 = RootsO2(1);
-		soln.r2 = 0.0;
-		soln.n = length(RootsO2);
-		if soln.n > 1
+		if length(RootsO2) > 1
 			soln.r2 = RootsO2(2);
+		else
+			soln.r2 = soln.r1;
 		end
 		valid = true;
 	else
