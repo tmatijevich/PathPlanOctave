@@ -1,12 +1,13 @@
 %!octave
 
 dx = 0.25:0.025:0.85; n = length(dx);
-dt = 0.300; v0 = 1.9; vf = 1.2;
+dt = 0.300; v0 = 1.9; vf = 1.2; vmin = 0.75; vmax = 3.0;
+% dt = 0.300; v0 = 0.0; vf = 0.0; vmin = 0.0; vmax = 3.0;
 t = cell(n, 1);
 v = cell(n, 1);
 a = zeros(n, 1);
 for i = 1:n
-	[soln, valid] = Kin_GetAcc(dt, dx(i), v0, vf, 0.75, 3.0);
+	[soln, valid] = Kin_GetAcc(dt, dx(i), v0, vf, vmin, vmax);
 	if valid
 		a(i) = soln.a;
 		if (soln.cs == 10) || (soln.cs == 1)
