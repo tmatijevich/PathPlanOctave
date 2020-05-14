@@ -46,7 +46,7 @@ function [soln, valid] = Kin_GetTimespan(dx, v0, vf, vmin, vmax, a)
 	
 	% Determine the time maximizing velocity minimizing profile
 	dxVminInflection = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * a);
-	if dx > dxVminInflection
+	if dx < dxVminInflection
 		% Triangle profile
 		v1 = sqrt((v0 ^ 2 + vf ^ 2) / 2.0 - dx * a); soln.v1min = v1;
 		soln.tVmin1 = (v0 - v1) / a;
