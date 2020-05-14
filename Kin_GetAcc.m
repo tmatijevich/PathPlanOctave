@@ -6,7 +6,7 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 	% Date: 2020-04-10
 	% Created by: Tyler Matijevich
 	
-	% Assume the result is valid
+	% Assume the result will be valid
 	valid = true;
 	soln.v = 0.0; soln.a = 0.0; soln.cs = 0; % Fallback/invalid result
 	
@@ -25,6 +25,7 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 	% Condition #4: Valid distance given velocity limits
 	elseif (dx <= (vmin * dt)) || (dx >= (vmax * dt))
 		printf("Kin_GetAcc call invalid: Impossible distance %1.3f given limits %1.3f, %1.3f\n", dx, vmin * dt, vmax * dt); valid = false; return;
+		
 	end % Conditions
 	
 	dxInflection = 0.5 * dt * (v0 + vf);
