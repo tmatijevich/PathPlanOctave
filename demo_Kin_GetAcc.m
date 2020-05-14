@@ -21,6 +21,16 @@ end
 
 hFig = figure(1, "name", "Kin_GetAcc()"); set(hFig, "menubar", "none"); cla;
 hold on;
+box(gca, "off")
+plot(t{4}, v{4}, "r*--");
+plot(t{15}, v{15}, "b*--");
+plot(t{21}, v{21}, "g*--");
+ylim([0 3]);
+xlabel("Time [s]");
+ylabel("Velocity [m/s]")
+
+hFig = figure(2, "name", "Kin_GetAcc()"); set(hFig, "menubar", "none"); cla;
+hold on;
 for i = 1:n
 	zplt = dx(i) .* ones(1, length(t{i}));
 	surf([t{i}(:) t{i}(:)], [v{i}(:) v{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.5); 
@@ -31,7 +41,7 @@ set(hColorbarTitle, "string", "Distance dx [m]");
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");
 
-hFig = figure(2, "name", "Kin_GetAcc()"); set(hFig, "menubar", "none"); cla;
+hFig = figure(3, "name", "Kin_GetAcc()"); set(hFig, "menubar", "none"); cla;
 hold on;
 for i = 1:n
 	zplt = a(i) .* ones(1, length(t{i}));
