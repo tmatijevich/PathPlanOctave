@@ -8,7 +8,7 @@ gPar = struct(
 	'DropOffset', 			-0.050,
 	'BucketSpacing', 		0.155,
 	'ToolingWidth', 		0.150,
-	'ToolPocketSpacing',	0.060,
+	'ToolPocketSpacing',	0.055,
 	'ProductsPerPallet', 	3,
 	'Payload', 				1.0,
 	'MinDwellTime', 		0.010,

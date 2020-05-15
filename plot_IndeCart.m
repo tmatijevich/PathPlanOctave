@@ -51,10 +51,16 @@ ev = [RouteVelocity, ev];
 et = [et, et(end) + it];
 ev = [ev, iv];
 
+% Set default line width
+set(groot, "defaultLineLineWidth", 1.75);
+
 hFig = figure(1, "name", "IndeCart"); set(hFig, "menubar", "none");
 cla;
-plot(et, ev, "k")
-plot(it, iv, "b");
+hPlte = plot(et, ev, "k", 'linewidth', 1.0);
+hPlti = plot(it, iv, "b");
 hold on;
-plot(f_t, f_v, "r--");
-plot(s_t, s_v, "g--");
+hPltf = plot(f_t, f_v, "r--");
+hPlts = plot(s_t, s_v, "g--");
+hLeg = legend([hPlti, hPltf, hPlts, hPlte], {"Current Pallet", "Fastest", "Slowest", "Incoming Pallet"});
+set(hLeg, 'fontsize', 12);
+set(gca, 'fontsize', 12);
