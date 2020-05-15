@@ -9,11 +9,11 @@ gPar = struct(
 	'BucketSpacing', 		0.155,
 	'ToolingWidth', 		0.150,
 	'ToolPocketSpacing',	0.050,
-	'ProductsPerPallet', 	3,
+	'ProductsPerPallet', 	1,
 	'Payload', 				1.0,
 	'MinDwellTime', 		0.010,
-	'MaxInfeedRate', 		425,
-	'TargetOutfeedRate', 	500,
+	'MaxInfeedRate', 		240,
+	'TargetOutfeedRate', 	250,
 	'MachinesInSeries', 	2,
 	'PhotoeyeDelayTime', 	2.0
 );
@@ -32,8 +32,9 @@ gCalc = struct(
 	'IndexTime2', 				0.0,
 	'IndexVelocity', 			0.0,
 	'IndexAcceleration', 		0.0,
-	'MinRiseVelocity', 			0.0,
-	'MinAccelRiseVelocity', 	0.0,
+	'MaxRateRiseVelocity',		0.0,
+	'MinAccRiseVelocity', 		0.0,
+	'MaxAccRiseVelocity', 		0.0,
 	'RiseVelocity', 			0.0,
 	'MinCollisionAcceleration', 0.0,
 	'MinCaptureAcceleration', 	0.0,
@@ -86,3 +87,40 @@ else
 	gCalc.IndexPositions(1) 	= gPar.LoadPosition;
 	gCalc.TotalIndexDistance 	= 0.0;
 end
+
+
+% Rise velocity calculations
+% The minimum rise velocity in order to maintain pallet throughput
+dt 		= gCalc.PalletPeriod;
+dx 		= gCalc.MinPalletSpacing;
+vmin 	= gCalc.MinCollisionVelocity;
+[soln, valid] = Math_2ndOrderRoots(2.0 * dt, -4.0 * dx, - dt * vmin ^ 2 + 2.0 * dx * vmin);
+if valid
+	gCalc.MaxRateRiseVelocity = max(soln.r1, soln.r2);
+else
+	printf("Maximum throughput velocity calc failed\n"); return;
+end
+
+% The minimum rise velocity for the minimum acceleration (Collision avoidance)
+gCalc.MinAccRiseVelocity = (gCalc.MinPalletSpacing - gCalc.TotalIndexDistance) / ((gCalc.MinInfeedPeriod - gPar.MinDwellTime) / 2.0);
+
+% The minimum rise velocity for the maximum acceleration (Collision avoidance)
+p2 = 1.0 / gCalc.ProfMaxAcceleration;
+p1 = -2.0 * (gCalc.MinCollisionVelocity / gCalc.ProfMaxAcceleration);
+p0 = (gCalc.MinInfeedPeriod - gPar.MinDwellTime) * gCalc.MinCollisionVelocity - (gCalc.MinPalletSpacing - gCalc.TotalIndexDistance);
+[soln, valid] = Math_2ndOrderRoots(p2, p1, p0);
+if valid
+	gCalc.MaxAccRiseVelocity = max(soln.r1, soln.r2);
+else
+	printf("Maximum acceleration rise velocity calc failed\n"); return;
+end
+
+% Choose the rise velocity based on the overall maximum
+gCalc.RiseVelocity = max([gCalc.IndexVelocity, gCalc.MaxRateRiseVelocity, gCalc.MinAccRiseVelocity, gCalc.MaxAccRiseVelocity]);
+
+% Determine the minimum collision acceleration
+gCalc.MinCollisionAcceleration = gCalc.RiseVelocity / ((gCalc.MinInfeedPeriod - gPar.MinDwellTime) / 2.0);
+
+
+% Display the results
+gCalc
