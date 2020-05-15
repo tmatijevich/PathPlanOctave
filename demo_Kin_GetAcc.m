@@ -10,13 +10,8 @@ for i = 1:n
 	[soln, valid] = Kin_GetAcc(dt, dx(i), v0, vf, vmin, vmax);
 	if valid
 		a(i) = soln.a;
-		if (soln.cs == 10) || (soln.cs == 1)
-			t{i} = [0.0, abs(v0 - soln.v) / soln.a, dt];
-			v{i} = [v0, soln.v, vf];
-		else
-			t{i} = [0.0, abs(v0 - soln.v) / soln.a, dt - abs(vf - soln.v) / soln.a, dt];
-			v{i} = [v0, soln.v, soln.v, vf];
-		end
+		t{i} = [0.0, soln.t1, soln.t2, dt];
+		v{i} = [v0, soln.v12, soln.v12, vf];
 	end
 end
 

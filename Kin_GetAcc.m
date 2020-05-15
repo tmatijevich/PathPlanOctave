@@ -8,7 +8,7 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 	
 	% Assume the result will be valid
 	valid = true;
-	soln.v = 0.0; soln.a = 0.0; soln.cs = 0; % Fallback/invalid result
+	soln.v12 = 0.0; soln.a = 0.0; soln.t1 = 0.0; soln.t2 = 0.0; soln.cs = 0; % Fallback/invalid result
 	
 	% Condition #1: Plausible velocity limits
 	if (vmin < 0.0) || (vmax <= vmin)
@@ -39,8 +39,10 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 			soln.cs = 10;
 		else
 			% A trapezoid profile with set velocity at the max
-			soln.v = vmax;
+			soln.v12 = vmax;
 			soln.a = ((2.0 * vmax ^ 2 - v0 ^ 2 - vf ^ 2) / 2.0 - (2.0 * vmax - v0 - vf) * vmax) / (dx - dt * vmax);
+			soln.t1 = (vmax - v0) / soln.a;
+			soln.t2 = dt - (vmax - vf) / soln.a;
 			soln.cs = 20;
 		end % dxVmaxInflection
 		
@@ -53,7 +55,9 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 		else
 			% A trapezoid profile with set velocity at the min
 			soln.a = ((v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / 2.0 - (v0 + vf - 2.0 * vmin) * vmin) / (dx - dt * vmin);
-			soln.v = vmin;
+			soln.v12 = vmin;
+			soln.t1 = (v0 - vmin) / soln.a;
+			soln.t2 = dt - (vf - vmin) / soln.a;
 			soln.cs = 2;
 		end % dxVminInflection
 		
@@ -68,14 +72,15 @@ function [soln, valid] = Kin_GetAcc(dt, dx, v0, vf, vmin, vmax)
 			printf("Kin_GetAcc call invalid: Imaginary roots for case %d\n", soln.cs); valid = false; return;
 		else
 			if soln.cs == 10
-				soln.v = max(solnRoots.r1, solnRoots.r2);
+				soln.v12 = max(solnRoots.r1, solnRoots.r2);
 			else
-				soln.v = min(solnRoots.r1, solnRoots.r2);
+				soln.v12 = min(solnRoots.r1, solnRoots.r2);
 			end
-			soln.a = abs(2.0 * soln.v - v0 - vf) / dt;
+			soln.a = abs(2.0 * soln.v12 - v0 - vf) / dt;
+			soln.t1 = soln.t2 = abs(soln.v12 - v0) / soln.a;
 		end
 	end
 	
-	printf("Kin_GetAcc call: Acc %1.3f, Vel %1.3f, Case %d\n", soln.a, soln.v, soln.cs);
+	printf("Kin_GetAcc call: Acc %1.3f, Vel %1.3f, Case %d\n", soln.a, soln.v12, soln.cs);
 	
 end
