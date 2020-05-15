@@ -11,6 +11,7 @@ function [soln, valid] = Kin_GetTimespan(dx, v0, vf, vmin, vmax, a)
 	soln.tspan = 0.0; % Fallback/invalid result
 	soln.tVmax1 = 0.0; soln.tVmax2 = 0.0; soln.tVmax = 0.0; soln.v1max = 0.0;
 	soln.tVmin1 = 0.0; soln.tVmin2 = 0.0; soln.tVmin = 0.0; soln.v1min = 0.0;
+	soln.cs = 0;
 	
 	% Condition #1: Plausible velocity limits
 	if (vmin < 0.0) || (vmax <= vmin)
@@ -20,7 +21,7 @@ function [soln, valid] = Kin_GetTimespan(dx, v0, vf, vmin, vmax, a)
 	elseif (v0 < vmin) || (v0 > vmax) || (vf < vmin) || (vf > vmax)
 		printf("Kin_GetTimespan call invalid: Endpoint velocities %1.3f, %1.3f exceed limits %1.3f, %1.3f\n", v0, vf, vmin, vmax); valid = false; return;
 	
-	% Condition #3: Positive time difference and distance
+	% Condition #3: Positive distance and accleration
 	elseif (dx <= 0.0) || (a <= 0.0)
 		printf("Kin_GetTimespan call invalid: Distance or acceleration non-positive %1.3f, %2.3f\n", dx, a); valid = false; return;
 	
@@ -62,6 +63,7 @@ function [soln, valid] = Kin_GetTimespan(dx, v0, vf, vmin, vmax, a)
 		soln.cs = soln.cs + 2;
 	end
 	
-	printf("Kin_GetTimespan call: Timespan %1.3f = %1.3f - %1.3f, Case %d\n", soln.tVmin - soln.tVmax, soln.tVmin, soln.tVmax, soln.cs);
+	soln.tspan = soln.tVmin - soln.tVmax;
+	printf("Kin_GetTimespan call: Timespan %1.3f = %1.3f - %1.3f, Case %d\n", soln.tspan, soln.tVmin, soln.tVmax, soln.cs);
 	
 end
