@@ -8,12 +8,12 @@ gPar = struct(
 	'DropOffset', 			-0.050,
 	'BucketSpacing', 		0.155,
 	'ToolingWidth', 		0.150,
-	'ToolPocketSpacing',	0.050,
-	'ProductsPerPallet', 	1,
+	'ToolPocketSpacing',	0.060,
+	'ProductsPerPallet', 	3,
 	'Payload', 				1.0,
 	'MinDwellTime', 		0.010,
-	'MaxInfeedRate', 		240,
-	'TargetOutfeedRate', 	250,
+	'MaxInfeedRate', 		425,
+	'TargetOutfeedRate', 	500,
 	'MachinesInSeries', 	2,
 	'PhotoeyeDelayTime', 	2.0
 );
@@ -45,7 +45,7 @@ gCalc = struct(
 	'EntryTime', 				0.0
 );
 
-
+RouteVelocity = 2.0;
 % Assume all parameters are valid
 
 % Baseline calculations
@@ -120,6 +120,30 @@ gCalc.RiseVelocity = max([gCalc.IndexVelocity, gCalc.MaxRateRiseVelocity, gCalc.
 
 % Determine the minimum collision acceleration
 gCalc.MinCollisionAcceleration = gCalc.RiseVelocity / ((gCalc.MinInfeedPeriod - gPar.MinDwellTime) / 2.0);
+
+
+% Determine the exact minimum capture acceleration
+tdiff 		= gCalc.SetOutfeedPeriod;
+dx 			= gPar.DropPosition + gPar.DropOffset - gCalc.IndexPositions(gPar.ProductsPerPallet);
+v1 			= gCalc.RiseVelocity;
+vf 			= gCalc.SetOutfeedVelocity;
+vmin 		= gCalc.MinCollisionVelocity;
+vmax 		= gCalc.ProfMaxVelocity;
+[soln, valid] = Kin_GetAccInTimespanPlus(tdiff, dx, v1, vf, vmin, vmax);
+if valid
+	gCalc.MinCaptureAcceleration = soln.a;
+else
+	printf("Minimum capture window acceleration calc failed\n"); return;
+end
+
+% Choose the profile acceleration
+gCalc.ProfAcceleration = max([gCalc.IndexAcceleration, gCalc.MinCollisionAcceleration, gCalc.MinCaptureAcceleration]);
+
+% Suplementary calculations
+gCalc.RiseTime 		= gCalc.RiseVelocity / gCalc.ProfAcceleration;
+gCalc.RiseDistance 	= 0.5 * gCalc.RiseTime * gCalc.RiseVelocity;
+gCalc.GainTime 		= gCalc.MinInfeedPeriod - 2.0 * gCalc.RiseTime - gPar.MinDwellTime;
+gCalc.EntryTime 	= abs(RouteVelocity - gCalc.RiseVelocity) / gCalc.ProfAcceleration;
 
 
 % Display the results
