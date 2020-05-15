@@ -34,7 +34,11 @@ function [soln, valid] = Kin_GetVelProfPoint(x0, timePoints, velPoints, n, t)
 	posPoints(1) = x0;
 	for i = 2:n
 		posPoints(i) = posPoints(i - 1) + 0.5 * (velPoints(i) + velPoints(i - 1)) * (timePoints(i) - timePoints(i - 1));
-		accPoints(i - 1) = (velPoints(i) - velPoints(i - 1)) / (timePoints(i) - timePoints(i - 1));
+		if (timePoints(i) - timePoints(i - 1) == 0)
+			accPoints(i - 1) = 0.0;
+		else
+			accPoints(i - 1) = (velPoints(i) - velPoints(i - 1)) / (timePoints(i) - timePoints(i - 1));
+		end
 	end
 	
 	% Find the requested segment

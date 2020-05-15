@@ -51,16 +51,41 @@ ev = [RouteVelocity, ev];
 et = [et, et(end) + it];
 ev = [ev, iv];
 
+
+% Position & acceleration
+itplot = it(1):0.005:it(end); n = length(itplot);
+ixplot = zeros(1,n);
+iaplot = zeros(1,n);
+for i = 1:n
+	[soln, valid] = Kin_GetVelProfPoint(0.0, it, iv, length(it), itplot(i));
+	if valid
+		ixplot(i) = soln.x;
+		iaplot(i) = soln.a;
+	end
+end
+
 % Set default line width
 set(groot, "defaultLineLineWidth", 1.75);
 
 hFig = figure(1, "name", "IndeCart"); set(hFig, "menubar", "none");
-cla;
+cur = get(hFig, 'position');
+set(hFig, 'position', [cur(1), cur(2), 800, 800]);
+subplot(3,1,1); cla; hold on;
+plot(itplot, ixplot, "b");
+xlim([0.0, 1.6]);
+set(gca, 'fontsize', 12);
+
+subplot(3,1,2); cla; hold on;
 hPlte = plot(et, ev, "k", 'linewidth', 1.0);
 hPlti = plot(it, iv, "b");
-hold on;
 hPltf = plot(f_t, f_v, "r--");
 hPlts = plot(s_t, s_v, "g--");
-hLeg = legend([hPlti, hPltf, hPlts, hPlte], {"Current Pallet", "Fastest", "Slowest", "Incoming Pallet"});
+hLeg = legend([hPlti, hPltf, hPlts, hPlte], {"Current Pallet", "Fastest", "Slowest", "Incoming Pallet"}, 'location', 'northeast');
+xlim([0.0, 1.6]);
 set(hLeg, 'fontsize', 12);
+set(gca, 'fontsize', 12);
+
+subplot(3,1,3); cla; hold on;
+plot(itplot, iaplot, "b");
+xlim([0.0, 1.6]);
 set(gca, 'fontsize', 12);
