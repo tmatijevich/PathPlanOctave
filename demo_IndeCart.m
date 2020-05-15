@@ -148,3 +148,6 @@ gCalc.EntryTime 	= abs(RouteVelocity - gCalc.RiseVelocity) / gCalc.ProfAccelerat
 
 % Display the results
 gCalc
+
+% Plot
+plot_IndeCart;
