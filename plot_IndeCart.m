@@ -56,11 +56,45 @@ ev = [ev, iv];
 itplot = it(1):0.005:it(end); n = length(itplot);
 ixplot = zeros(1,n);
 iaplot = zeros(1,n);
+x0 = gPar.LoadPosition;
 for i = 1:n
-	[soln, valid] = Kin_GetVelProfPoint(0.0, it, iv, length(it), itplot(i));
+	[soln, valid] = Kin_GetVelProfPoint(x0, it, iv, length(it), itplot(i));
 	if valid
 		ixplot(i) = soln.x;
 		iaplot(i) = soln.a;
+	end
+end
+ftplot = f_t(1):0.001:f_t(end); n = length(ftplot);
+fxplot = zeros(1,n);
+faplot = zeros(1,n);
+x0 = gPar.LoadPosition + gCalc.TotalIndexDistance + gCalc.RiseDistance;
+for i = 1:n
+	[soln, valid] = Kin_GetVelProfPoint(x0, f_t, f_v, length(f_t), ftplot(i));
+	if valid
+		fxplot(i) = soln.x;
+		faplot(i) = soln.a;
+	end
+end
+stplot = s_t(1):0.001:s_t(end); n = length(stplot);
+sxplot = zeros(1,n);
+saplot = zeros(1,n);
+x0 = gPar.LoadPosition + gCalc.TotalIndexDistance + gCalc.RiseDistance;
+for i = 1:n
+	[soln, valid] = Kin_GetVelProfPoint(x0, s_t, s_v, length(s_t), stplot(i));
+	if valid
+		sxplot(i) = soln.x;
+		saplot(i) = soln.a;
+	end
+end
+etplot = et(1):0.001:et(end); n = length(etplot);
+explot = zeros(1,n);
+eaplot = zeros(1,n);
+x0 = gPar.LoadPosition - (RouteVelocity ^ 2) / (2.0 * gCalc.ProfAcceleration) - (gCalc.PalletPeriod - RouteVelocity / gCalc.ProfAcceleration) * RouteVelocity;
+for i = 1:n
+	[soln, valid] = Kin_GetVelProfPoint(x0, et, ev, length(et), etplot(i));
+	if valid
+		explot(i) = soln.x;
+		eaplot(i) = soln.a;
 	end
 end
 
@@ -71,9 +105,14 @@ hFig = figure(1, "name", "IndeCart"); set(hFig, "menubar", "none");
 cur = get(hFig, 'position');
 set(hFig, 'position', [cur(1), cur(2), 800, 800]);
 subplot(3,1,1); cla; hold on;
+plot(etplot, explot, "k", 'linewidth', 1.0);
 plot(itplot, ixplot, "b");
+plot(ftplot, fxplot, "r--");
+plot(stplot, sxplot, "g--");
 xlim([0.0, 1.6]);
+ylim([round(10 * (gPar.LoadPosition - 0.100)) / 10.0, round(10 * (gPar.DropPosition + gPar.DropOffset + 0.100)) / 10.0]);
 set(gca, 'fontsize', 12);
+ylabel("Position [m]");
 
 subplot(3,1,2); cla; hold on;
 hPlte = plot(et, ev, "k", 'linewidth', 1.0);
@@ -84,8 +123,13 @@ hLeg = legend([hPlti, hPltf, hPlts, hPlte], {"Current Pallet", "Fastest", "Slowe
 xlim([0.0, 1.6]);
 set(hLeg, 'fontsize', 12);
 set(gca, 'fontsize', 12);
+ylabel("Velocity [m/s]");
 
 subplot(3,1,3); cla; hold on;
 plot(itplot, iaplot, "b");
+plot(ftplot, faplot, "r--");
+plot(stplot, saplot, "g--");
 xlim([0.0, 1.6]);
 set(gca, 'fontsize', 12);
+xlabel("Time [s]");
+ylabel("Acceleration [m/s^2]");
