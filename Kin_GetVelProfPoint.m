@@ -9,7 +9,7 @@ function [soln, valid] = Kin_GetVelProfPoint(x0, timePoints, velPoints, n, t)
 	valid = true;
 	soln.x = 0.0; soln.v = 0.0; soln.a = 0.0; % Fallback/invalid solution
 	
-	N = 20;
+	N = 50;
 	accPoints = zeros(N,1);
 	posPoints = zeros(N,1);
 	
