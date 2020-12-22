@@ -1,6 +1,6 @@
 %!octave
 
-function [Solution, valid] = SecondOrderRoots(p2, p1, p0)
+function [Solution, Valid] = SecondOrderRoots(p2, p1, p0)
 	% Return the real roots of a second order polynomial
 	% Date: 2020-05-13
 	% Created by: Tyler Matijevich
@@ -8,25 +8,25 @@ function [Solution, valid] = SecondOrderRoots(p2, p1, p0)
 	% Reset solution
 	Solution.r1 = 0.0; Solution.r2 = 0.0;
 	
-	% Compute the determinant
-	determinant = p1 ^ 2 - 4.0 * p2 * p0;
+	% Compute the discriminant
+	Discriminant = p1 ^ 2 - 4.0 * p2 * p0; % b^2 - 4ac
 	
 	% Two roots
 	if p2 != 0.0 % Protect against divide-by-zero
-		if determinant > 0.0 % Two real roots
-			Solution.r1 = ((-p1) + sqrt(determinant)) / (2.0 * p2);
-			Solution.r2 = ((-p1) - sqrt(determinant)) / (2.0 * p2);
+		if Discriminant > 0.0 % Two real roots
+			Solution.r1 = ((-p1) + sqrt(Discriminant)) / (2.0 * p2); 
+			Solution.r2 = ((-p1) - sqrt(Discriminant)) / (2.0 * p2);
 			
-		elseif determinant < 0.0 % Imaginary roots
+		elseif Discriminant < 0.0 % Imaginary roots
 			printf("SecondOrderRoots call warning: Solution has imaginary roots\n");
-			valid = false;
+			Valid = false;
 			return;
 			
 		else % Multiple roots
 			Solution.r1 = (-p1) / (2.0 * p2);
 			Solution.r2 = Solution.r1;
 			
-		end % determinant
+		end % discriminant
 	
 	else % First order
 		if p1 != 0 % Single root
@@ -35,13 +35,13 @@ function [Solution, valid] = SecondOrderRoots(p2, p1, p0)
 			
 		else % No roots
 			printf("SecondOrderRoots call warning: First order, no solution\n");
-			valid = false;
+			Valid = false;
 			return;
 			
 		end % Single root?
 	end % Two roots?
 	
 	printf("SecondOrderRoots call: roots %1.3f, %1.3f\n", Solution.r1, Solution.r2)
-	valid = true;
+	Valid = true;
 
 end % Function
