@@ -1,6 +1,6 @@
 %!octave
 
-function [Solution, Valid] = SecondOrderRoots(p2, p1, p0)
+function [Solution, Valid] = SecondOrderRoots(p2, p1, p0, PrintResult = false)
 	% Return the real roots of a second order polynomial
 	% Date: 2020-05-13
 	% Created by: Tyler Matijevich
@@ -41,7 +41,9 @@ function [Solution, Valid] = SecondOrderRoots(p2, p1, p0)
 		end % Single root?
 	end % Two roots?
 	
-	printf("SecondOrderRoots call: roots %1.3f, %1.3f\n", Solution.r1, Solution.r2)
+	if PrintResult
+		printf("SecondOrderRoots call: roots %1.3f, %1.3f\n", Solution.r1, Solution.r2)
+	end
 	Valid = true;
 
 end % Function
