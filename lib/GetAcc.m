@@ -3,7 +3,7 @@
 function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = false)
 	% Determine the minimum acceleration to change velocity in time over a distance
 	% Assumptions:
-	% 	- Positive position and velocity
+	% 	- Positive distance and velocity
 	% 	- Symmetric acceleration and deceleration
 	% 	- Zero jerk
 	% Date: 2020-04-10
@@ -118,7 +118,7 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 		end % Roots valid?
 	end % Triangle movement?
 	
-	% Set initial solution values
+	% Set common solution values and validate
 	Solution.t(4) = dt;
 	Solution.v(1) = v0;
 	Solution.v(4) = vf;
