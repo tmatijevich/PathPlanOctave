@@ -18,6 +18,7 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 	
 	% Reset solution
 	Solution.t = [0.0, 0.0, 0.0, 0.0];
+	Solution.dx = 0.0;
 	Solution.v = [0.0, 0.0, 0.0, 0.0];
 	Solution.a = 0.0;
 	Solution.Move = KIN_MOVE_NONE;
@@ -25,25 +26,25 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 	% Input requirements
 	% #1: Plausible velocity limits
 	if (vmin < 0.0) || (vmax <= vmin)
-		printf("GetAcc call failed: Implausible velocity limits %1.3f, %1.3f\n", vmin, vmax); 
+		printf("GetAcc call failed: Implausible velocity limits %.3f, %.3f\n", vmin, vmax); 
 		Valid = false; 
 		return;
 	
 	% #2: Endpoint velocities within limits
 	elseif (v0 < vmin) || (v0 > vmax) || (vf < vmin) || (vf > vmax)
-		printf("GetAcc call failed: Endpoint velocities %1.3f, %1.3f exceed limits %1.3f, %1.3f\n", v0, vf, vmin, vmax); 
+		printf("GetAcc call failed: Endpoint velocities %.3f, %.3f exceed limits %.3f, %.3f\n", v0, vf, vmin, vmax); 
 		Valid = false; 
 		return;
 	
 	% #3: Positive time and distance
 	elseif (dt <= 0.0) || (dx <= 0.0)
-		printf("GetAcc call failed: Time or distance non-positive %1.3f, %1.3f\n", dt, dx); 
+		printf("GetAcc call failed: Time or distance non-positive %.3f, %.3f\n", dt, dx); 
 		Valid = false; 
 		return;
 		
 	% #4: Valid distance given velocity limits
 	elseif (dx <= (vmin * dt)) || (dx >= (vmax * dt))
-		printf("GetAcc call failed: Impossible distance %1.3f given limits %1.3f, %1.3f\n", dx, vmin * dt, vmax * dt); 
+		printf("GetAcc call failed: Impossible distance %.3f given limits %.3f, %.3f\n", dx, vmin * dt, vmax * dt); 
 		Valid = false; 
 		return;
 		
@@ -120,12 +121,13 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 	
 	% Set common solution values and validate
 	Solution.t(4) = dt;
+	Solution.dx = dx;
 	Solution.v(1) = v0;
 	Solution.v(4) = vf;
 	Valid = true;
 	
 	if PrintResult
-		printf("GetAcc call: Acc %1.3f, Vel %1.3f, Move %d\n", Solution.a, Solution.v(2), Solution.Move);
+		printf("GetAcc call: Acc %.3f, Vel %.3f, Move %d\n", Solution.a, Solution.v(2), Solution.Move);
 	end
 	
 end % Function

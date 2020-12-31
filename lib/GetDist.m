@@ -16,6 +16,7 @@ function [Solution, Valid] = GetDist(dt, v0, vf, vmin, vmax, a, PrintResult = fa
 	
 	% Reset solution
 	Solution.t = [0.0, 0.0, 0.0, 0.0];
+	Solution.dx = 0.0;
 	Solution.v = [0.0, 0.0, 0.0, 0.0];
 	Solution.a = 0.0;
 	Solution.Move = KIN_MOVE_NONE;
@@ -80,6 +81,7 @@ function [Solution, Valid] = GetDist(dt, v0, vf, vmin, vmax, a, PrintResult = fa
 	end
 	
 	% Set common solution values and validate
+	Solution.t(4) = dt;
 	Solution.v(1) = v0;
 	Solution.v(4) = vf;
 	Solution.a = a;
