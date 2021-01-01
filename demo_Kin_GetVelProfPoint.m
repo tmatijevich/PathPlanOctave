@@ -10,7 +10,7 @@ vplot = zeros(n,1);
 aplot = zeros(n,1);
 
 for i = 1:n
-	[soln, valid] = Kin_GetVelProfPoint(0.0, t(1:N), v(1:N), N, tplot(i));
+	[soln, valid] = GetPoint(0.0, t(1:N), v(1:N), N, tplot(i));
 	if valid
 		xplot(i) = soln.x;
 		vplot(i) = soln.v;

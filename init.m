@@ -10,3 +10,4 @@ global KIN_DEC_DEC_TRAP = 3;
 global KIN_ACC_DEC_TRI 	= 10;
 global KIN_ACC_DEC_TRAP = 20;
 global KIN_ACC_ACC_TRAP = 30;
+global KIN_MAX_POINTS = 50;
