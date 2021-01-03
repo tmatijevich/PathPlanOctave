@@ -10,16 +10,16 @@ function [Solution, Valid] = GetDist(dt, v0, vf, vmin, vmax, a, PrintResult = fa
 	% Created by: Tyler Matijevich
 	
 	% Reference global variables
-	global KIN_MOVE_NONE;
-	global KIN_ACC_DEC_TRI;
-	global KIN_ACC_DEC_TRAP;
+	global PATH_MOVE_NONE;
+	global PATH_ACC_DEC_PEAK;
+	global PATH_ACC_DEC_SATURATED;
 	
 	% Reset solution
 	Solution.t = [0.0, 0.0, 0.0, 0.0];
 	Solution.dx = 0.0;
 	Solution.v = [0.0, 0.0, 0.0, 0.0];
 	Solution.a = 0.0;
-	Solution.Move = KIN_MOVE_NONE;
+	Solution.Move = PATH_MOVE_NONE;
 	
 	% Input requirements
 	% #1: Plausible velocity limits
@@ -51,9 +51,9 @@ function [Solution, Valid] = GetDist(dt, v0, vf, vmin, vmax, a, PrintResult = fa
 	% There is no distance advantage to decelerate then accelerate, therefore only ACC_DEC profiles will be considered
 	VmaxTime = (2 * vmax - v0 - vf) / a;
 	
-	% Check if triangle or trapezoid profile
-	if dt < VmaxTime % Triangle profile with peak velocity
-		Solution.Move = KIN_ACC_DEC_TRI;
+	% Check if saturated profile
+	if dt < VmaxTime % Acc/dec profile with peak
+		Solution.Move = PATH_ACC_DEC_PEAK;
 		
 		% Determine the peak velocity
 		vpeak = (dt * a + v0 + vf) / 2.0;
@@ -65,8 +65,8 @@ function [Solution, Valid] = GetDist(dt, v0, vf, vmin, vmax, a, PrintResult = fa
 		Solution.v(2) = vpeak;
 		Solution.v(3) = vpeak;
 		
-	else % Trapezoid profile at vmax
-		Solution.Move = KIN_ACC_DEC_TRAP;
+	else % Acc/dec profile saturated at vmax
+		Solution.Move = PATH_ACC_DEC_SATURATED;
 		
 		% Determine the distance at vmax
 		dx12 = (dt - (2.0 * vmax - v0 - vf) / a) * vmax;

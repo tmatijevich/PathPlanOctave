@@ -38,7 +38,7 @@ for i = 1:n
 end
 hColorbar = colorbar;
 hColorbarTitle = get(hColorbar, "label");
-set(hColorbarTitle, "string", 'Distance {\Delta}x [m]');
+set(hColorbarTitle, "string", 'Distance {\delta}x [m]');
 set(hColorbarTitle, "interpreter", "tex");
 xlabel("Time [s]");
 ylabel("Velocity [m/s]");

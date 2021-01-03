@@ -10,18 +10,18 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 	% Created by: Tyler Matijevich
 	
 	% Reference global variables
-	global KIN_MOVE_NONE;
-	global KIN_DEC_ACC_TRI;
-	global KIN_DEC_ACC_TRAP;
-	global KIN_ACC_DEC_TRI;
-	global KIN_ACC_DEC_TRAP;
+	global PATH_MOVE_NONE;
+	global PATH_DEC_ACC_PEAK;
+	global PATH_DEC_ACC_SATURATED;
+	global PATH_ACC_DEC_PEAK;
+	global PATH_ACC_DEC_SATURATED;
 	
 	% Reset solution
 	Solution.t = [0.0, 0.0, 0.0, 0.0];
 	Solution.dx = 0.0;
 	Solution.v = [0.0, 0.0, 0.0, 0.0];
 	Solution.a = 0.0;
-	Solution.Move = KIN_MOVE_NONE;
+	Solution.Move = PATH_MOVE_NONE;
 	
 	% Input requirements
 	% #1: Plausible velocity limits
@@ -55,14 +55,14 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 	NominalDistance = 0.5 * dt * (v0 + vf); % Area of a trapezoid
 	
 	if dx >= NominalDistance % 1. ACC 2. DEC
-		% Determine if triangle or trapezoid profile
+		% Determine if saturated profile
 		VmaxDistance = (2.0 * vmax ^ 2 - v0 ^ 2 - vf ^ 2) / (2.0 * ((2.0 * vmax - v0 - vf) / dt));
 		
-		if dx < VmaxDistance % Triangle profile with a peak
-			Solution.Move = KIN_ACC_DEC_TRI;
+		if dx < VmaxDistance % Acc/dec profile with peak
+			Solution.Move = PATH_ACC_DEC_PEAK;
 			
-		else % Trapezoid profile at vmax
-			Solution.Move = KIN_ACC_DEC_TRAP;
+		else % Acc/dec profile saturated at vmax
+			Solution.Move = PATH_ACC_DEC_SATURATED;
 			Solution.a = ((2.0 * vmax ^ 2 - v0 ^ 2 - vf ^ 2) / 2.0 - (2.0 * vmax - v0 - vf) * vmax) / (dx - dt * vmax);
 			Solution.v(2) = vmax;
 			Solution.v(3) = vmax;
@@ -72,14 +72,14 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 		end % VmaxDistance?
 		
 	else % 1. DEC 2. ACC
-		% Determine if triangle or trapezoid profile
+		% Determine if saturated profile
 		VminDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * ((v0 + vf - 2.0 * vmin) / dt));
 		
-		if dx > VminDistance % Triangle profile with a dip
-			Solution.Move = KIN_DEC_ACC_TRI;
+		if dx > VminDistance % Dec/acc profile with dip
+			Solution.Move = PATH_DEC_ACC_PEAK;
 			
-		else % Trapezoid profile at vmin
-			Solution.Move = KIN_DEC_ACC_TRAP;
+		else % Dec/acc profile saturated at vmin
+			Solution.Move = PATH_DEC_ACC_SATURATED;
 			Solution.a = ((v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / 2.0 - (v0 + vf - 2.0 * vmin) * vmin) / (dx - dt * vmin);
 			Solution.v(2) = vmin;
 			Solution.v(3) = vmin;
@@ -90,19 +90,19 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 		
 	end % NominalDistance?
 	
-	if (Solution.Move == KIN_ACC_DEC_TRI) || (Solution.Move == KIN_DEC_ACC_TRI)
+	if (Solution.Move == PATH_ACC_DEC_PEAK) || (Solution.Move == PATH_DEC_ACC_PEAK)
 		p2 = 2.0 * dt;
 		p1 = -4.0 * dx;
 		p0 = 2.0 * dx * (v0 + vf) - dt * (v0 ^ 2 + vf ^ 2);
 		[RootsSolution, RootsValid] = SecondOrderRoots(p2, p1, p0);
 		
 		if !RootsValid
-			printf("GetAcc call failed: Invalid roots for triangle movement\n");
+			printf("GetAcc call failed: Invalid roots for peak movement\n");
 			Valid = false;
 			return;
 			
 		else % Roots are valid
-			if Solution.Move == KIN_ACC_DEC_TRI % Vmax
+			if Solution.Move == PATH_ACC_DEC_PEAK % Vmax
 				Solution.v(2) = max(RootsSolution.r1, RootsSolution.r2);
 				Solution.v(3) = Solution.v(2);
 				
@@ -117,7 +117,7 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 			Solution.t(3) = Solution.t(2);
 			
 		end % Roots valid?
-	end % Triangle movement?
+	end % Peak movement?
 	
 	% Set common solution values and validate
 	Solution.t(4) = dt;

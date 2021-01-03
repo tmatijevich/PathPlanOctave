@@ -10,19 +10,19 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 	% Created by: Tyler Matijevich
 	
 	% Reference global variables
-	global KIN_MOVE_NONE;
-	global KIN_DEC_ACC_TRI;
-	global KIN_DEC_ACC_TRAP;
-	global KIN_ACC_DEC_TRI;
-	global KIN_ACC_DEC_TRAP;
+	global PATH_MOVE_NONE;
+	global PATH_DEC_ACC_PEAK;
+	global PATH_DEC_ACC_SATURATED;
+	global PATH_ACC_DEC_PEAK;
+	global PATH_ACC_DEC_SATURATED;
 	
 	% Reset solution
 	Solution.vA = [0.0, 0.0, 0.0, 0.0];
 	Solution.tA = [0.0, 0.0, 0.0, 0.0];
-	Solution.MoveA = KIN_MOVE_NONE;
+	Solution.MoveA = PATH_MOVE_NONE;
 	Solution.vB = [0.0, 0.0, 0.0, 0.0];
 	Solution.tB = [0.0, 0.0, 0.0, 0.0];
-	Solution.MoveB = KIN_MOVE_NONE;
+	Solution.MoveB = PATH_MOVE_NONE;
 	Solution.tdiff = 0.0;
 	
 	% Input requirements
@@ -54,8 +54,8 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 	
 	% Determine the time minimizing profile
 	VmaxDistance = (2.0 * vmax ^ 2 - v0 ^ 2 - vf ^ 2) / (2.0 * a);
-	if dx < VmaxDistance % Triangle profile with peak
-		Solution.MoveA = KIN_ACC_DEC_TRI;
+	if dx < VmaxDistance % Acc/dec profile with peak
+		Solution.MoveA = PATH_ACC_DEC_PEAK;
 		
 		% Determine the peak velocity
 		Solution.vA(2) = sqrt(dx * a + (v0 ^ 2 + vf ^ 2) / 2.0);
@@ -64,8 +64,8 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 		Solution.tA(3) = (Solution.vA(2) - v0) / a;
 		Solution.tA(4) = (Solution.vA(2) - v0) / a + (Solution.vA(3) - vf) / a;
 		
-	else % Trapezoid profile at vmax
-		Solution.MoveA = KIN_ACC_DEC_TRAP;
+	else % Acc/dec profile saturated at vmax
+		Solution.MoveA = PATH_ACC_DEC_SATURATED;
 		
 		% Determine time at set velocity
 		tVmax12 = (dx - VmaxDistance) / vmax;
@@ -79,8 +79,8 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 	
 	% Determine the time maximizing profile
 	VminDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * a);
-	if dx < VminDistance % Triangle profile with dip
-		Solution.MoveB = KIN_DEC_ACC_TRI;
+	if dx < VminDistance % Dec/acc profile with dip
+		Solution.MoveB = PATH_DEC_ACC_PEAK;
 		
 		% Determine the dip velocity
 		Solution.vB(2) = sqrt((v0 ^ 2 + vf ^ 2) / 2.0 - dx * a);
@@ -89,8 +89,8 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 		Solution.tB(3) = (v0 - Solution.vB(2)) / a;
 		Solution.tB(4) = (v0 - Solution.vB(2)) / a + (vf - Solution.vB(3)) / a;
 		
-	else % Trapezoid profile at vmin
-		Solution.MoveB = KIN_DEC_ACC_TRAP;
+	else % Dec/acc profile saturated at vmin
+		Solution.MoveB = PATH_DEC_ACC_SATURATED;
 		
 		% Determine the time at set velocity
 		tVmin12 = (dx - VminDistance) / vmin;

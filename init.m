@@ -3,11 +3,11 @@
 % Add lib, samples, and plot subdirectories
 addpath("lib", "samples", "plot", "test");
 
-global KIN_MOVE_NONE 	= 0;
-global KIN_DEC_ACC_TRI 	= 1;
-global KIN_DEC_ACC_TRAP = 2;
-global KIN_DEC_DEC_TRAP = 3;
-global KIN_ACC_DEC_TRI 	= 10;
-global KIN_ACC_DEC_TRAP = 20;
-global KIN_ACC_ACC_TRAP = 30;
-global KIN_MAX_POINTS = 50;
+global PATH_MOVE_NONE 			= 0;
+global PATH_DEC_ACC_PEAK 		= 1;
+global PATH_DEC_ACC_SATURATED 	= 2;
+global PATH_ACC_DEC_PEAK 		= 10;
+global PATH_ACC_DEC_SATURATED 	= 20;
+global PATH_DEC_DEC 			= 30;
+global PATH_ACC_ACC 			= 40;
+global PATH_MAX_POINTS 			= 20;

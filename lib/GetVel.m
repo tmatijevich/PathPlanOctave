@@ -11,20 +11,20 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 	% Created by: Tyler Matijevich
 	
 	% Reference global variables
-	global KIN_MOVE_NONE;
-	global KIN_DEC_ACC_TRI;
-	global KIN_DEC_ACC_TRAP;
-	global KIN_DEC_DEC_TRAP;
-	global KIN_ACC_DEC_TRI;
-	global KIN_ACC_DEC_TRAP;
-	global KIN_ACC_ACC_TRAP;
+	global PATH_MOVE_NONE;
+	global PATH_DEC_ACC_PEAK;
+	global PATH_DEC_ACC_SATURATED;
+	global PATH_DEC_DEC;
+	global PATH_ACC_DEC_PEAK;
+	global PATH_ACC_DEC_SATURATED;
+	global PATH_ACC_ACC;
 	
 	% Reset solution
 	Solution.t = [0.0, 0.0, 0.0, 0.0];
 	Solution.dx = 0.0;
 	Solution.v = [0.0, 0.0, 0.0, 0.0];
 	Solution.a = 0.0;
-	Solution.Move = KIN_MOVE_NONE;
+	Solution.Move = PATH_MOVE_NONE;
 	
 	% Input requirements
 	% #1: Plausible velocity limits
@@ -103,8 +103,8 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 	
 	% Solve for the three cases
 	if a1Sign == 1.0 && a2Sign == -1.0 % ACC_DEC
-		% Assume the move is a trapezoid approaching a triangle profile only when dx = MaxDistance and vpeak <= vmax
-		Solution.Move = KIN_ACC_DEC_TRAP;
+		% Assume the move is a saturated approaching a peak profile only when dx = MaxDistance and vpeak <= vmax
+		Solution.Move = PATH_ACC_DEC_SATURATED;
 		
 		p2 = - 1.0 / a;
 		p1 = dt - NominalTime + (2.0 * max(v0, vf)) / a;
@@ -112,15 +112,15 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 		
 	elseif a1Sign == a2Sign % ACC_ACC or DEC_DEC
 		if a1Sign == 1.0
-			Solution.Move = KIN_ACC_ACC_TRAP;
+			Solution.Move = PATH_ACC_ACC;
 		else
-			Solution.Move = KIN_DEC_DEC_TRAP;
+			Solution.Move = PATH_DEC_DEC;
 		end
 		
 		Solution.v(2) = (dx - NominalDistance) / (dt - NominalTime);
 		
 	else % DEC_ACC
-		Solution.Move = KIN_DEC_ACC_TRAP;
+		Solution.Move = PATH_DEC_ACC_SATURATED;
 		
 		p2 = 1.0 / a;
 		p1 = dt - NominalTime - (2.0 * min(v0, vf)) / a;
@@ -129,7 +129,7 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 	end
 	
 	% Use quadratic function
-	if (Solution.Move == KIN_ACC_DEC_TRAP) || (Solution.Move == KIN_DEC_ACC_TRAP)
+	if (Solution.Move == PATH_ACC_DEC_SATURATED) || (Solution.Move == PATH_DEC_ACC_SATURATED)
 		[RootsSolution, RootsValid] = SecondOrderRoots(p2, p1, p0);
 		
 		if !RootsValid
@@ -139,7 +139,7 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 			
 		else
 			% Choose the appropriate root
-			if Solution.Move == KIN_ACC_DEC_TRAP
+			if Solution.Move == PATH_ACC_DEC_SATURATED
 				Solution.v(2) = min(RootsSolution.r1, RootsSolution.r2);
 			else
 				Solution.v(2) = max(RootsSolution.r1, RootsSolution.r2);
