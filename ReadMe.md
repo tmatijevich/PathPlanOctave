@@ -21,7 +21,7 @@ List of functions:
 
 Here is a sample for the `GetAcc()` function where the acceleration of a linear motion profile is determined given the time, distance, initial & final velocities, and velocity limits.
 
-![GetAcc sample](GetAcc_Sample_2021-01-17_21.05.04.png)
+![GetAcc sample](GetAcc_Sample_2021-01-17_21.38.31.png)
 
 Provided a velocity point profile, the `GetPoint()` function will return the position, velocity, and acceleration at an intermediate time value.
 
