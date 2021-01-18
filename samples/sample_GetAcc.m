@@ -11,7 +11,7 @@ vmax 	= 3.0;
 % Create the figure
 hFig = figure(1, "name", "GetAcc() Sample"); set(hFig, "menubar", "none");
 CurrentPosition = get(gcf, "position");
-set(gcf, "position", [CurrentPosition(1:2) 860 720]);
+set(gcf, "position", [CurrentPosition(1:2) 830 720]);
 textSize = 13;
 tickSize = 10;
 
