@@ -43,9 +43,9 @@ List of functions:
 	- `a = GetAccInTimeDiffWithRise(tdiff, dx, v0, vf, vmin, vmax)`
 	- Same as `GetAccInTimeDiff`, but also consider an initial rise in velocity from standstill.
 	
-This library typically describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, as well as an intermediate velocity possibly saturated by the limits.
-
 ## Sample Plots
+
+This library typically describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, as well as an intermediate velocity possibly saturated by the limits.
 
 ![Sample profile](media/VelocityProfile.png)
 
