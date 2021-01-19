@@ -45,6 +45,8 @@ List of functions:
 	
 This library typically describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, as well as an intermediate velocity possibly saturated by the limits.
 
+## Sample Plots
+
 ![Sample profile](media/VelocityProfile.png)
 
 Here is a sample for the `GetAcc()` function where the acceleration of a linear motion profile is determined given the time, distance, initial & final velocities, and velocity limits.
