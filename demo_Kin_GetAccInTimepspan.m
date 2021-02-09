@@ -7,5 +7,5 @@ dx = 0.350;
 % hFig = figure(1, "name", "Kin_GetAccInTimespan()"); set(hFig, "menubar", "none"); cla;
 % hold on;
 for i = 1:n
-	[soln, valid] = Kin_GetAccInTimespan(tdiff(i), dx, v0, vf, vmin, vmax);
+	[soln, valid] = GetAccInTimeDiff(tdiff(i), dx, v0, vf, vmin, vmax, true);
 end
