@@ -1,7 +1,7 @@
 %!octave
 
 % Add lib, samples, and plot subdirectories
-addpath("lib", "samples", "plot", "test");
+addpath("lib", "samples", "plot", "test", "diag");
 
 global PATH_MOVE_NONE 			= 0;
 global PATH_DEC_ACC_PEAK 		= 1;
