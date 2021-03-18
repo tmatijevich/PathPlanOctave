@@ -78,7 +78,7 @@ function [Solution, Valid] = GetAccInTimeDiff(tdiff, dx, v0, vf, vmin, vmax, Pri
 	
 	if AccVmaxSatLimit < AccVminSatLimit
 		% The vmin profile is not saturated
-		DipVel = sqrt(dx * AccVmaxSatLimit - (v0 ^ 2 + vf ^ 2) / 2.0);
+		DipVel = sqrt((v0 ^ 2 + vf ^ 2) / 2.0 - dx * AccVmaxSatLimit);
 		VminTimeAtVmaxSatLimit = (v0 + vf - 2.0 * DipVel) / AccVmaxSatLimit;
 	else
 		% The vmin profile is saturated
@@ -119,17 +119,17 @@ function [Solution, Valid] = GetAccInTimeDiff(tdiff, dx, v0, vf, vmin, vmax, Pri
 		c3 = tdiff - (dx / vmin);
 		p2 = c3 ^ 2;
 		p1 = - 4.0 * dx - 2.0 * c2 * c3;
-		p0 = c2 ^ 2 + 4.0 * c1;
+		p0 = c2 ^ 2 - 4.0 * c1;
 		
 		Solution.vmax.Move = PATH_ACC_DEC_PEAK;
 		Solution.vmin.Move = PATH_DEC_ACC_SATURATED;
 		
 		RequiresSecondOrderSolution = true;
 		
-	elseif (tdiff >= TimeDiffAtVmaxSatLimit) && (tdiff < TimeDiffAtVmaxSatLimit)
+	elseif (tdiff >= TimeDiffAtVmaxSatLimit) && (tdiff < TimeDiffAtVminSatLimit)
 		% Equate reduction constants
 		c1 = (v0 ^ 2 + vf ^ 2) / 2.0;
-		c2 = (-1.0) * cVminTime + cVmaxTime + v0 + vf;
+		c2 = (-1.0) * cVmaxTime + cVmaxDistance + v0 + vf;
 		c3 = tdiff + (dx / vmax);
 		p2 = c3 ^ 2;
 		p1 = 4.0 * dx - 2.0 * c2 * c3;
