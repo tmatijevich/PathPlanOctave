@@ -76,13 +76,6 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 		% 2. Jerk gain of 1.0 - use the average acceleration (infinite jerk)
 		% 3. Jerk gain > 1.0 - determine if the acceleration is saturated
 		
-		% Determine the peak acceleration (assuming a positive velocity change)
-		apeak = (2.0 * abs(vt(b) - vt(a))) / (t_(b) - t_(a));
-		% Determine the sign of the velocity change (sign of acceleration)
-		VelocitySign = (vt(b) - vt(a)) / abs(vt(b) - vt(a)));
-		% Determine the average acceleration
-		abar = abs(vt(b) - vt(a)) / (t_(b) - t_(a));
-		
 		% 1. No time step
 		if t_(b) == t_(a)
 			jt(a) 	= 0.0; % Zero jerk
@@ -99,6 +92,18 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 			t_(a+1) 	= t_(a);
 			t_(a+2) 	= t_(a);
 		else
+			% Determine the peak acceleration (assuming a positive velocity change)
+			apeak = (2.0 * abs(vt(b) - vt(a))) / (t_(b) - t_(a));
+			if vt(b) != vt(a)
+				% Determine the sign of the velocity change (sign of acceleration)
+				VelocitySign = (vt(b) - vt(a)) / abs(vt(b) - vt(a));
+				% Determine the average acceleration
+				abar = abs(vt(b) - vt(a)) / (t_(b) - t_(a));
+			else
+				VelocitySign 	= 1.0;
+				abar 			= 0.0;
+			endif
+			
 			if k > 1.0 % Determine if there is infinite jerk (k = 1.0)
 				if apeak <= k*abar % Determine if the acceleration profile will be saturated
 					% Unstaturated acceleration profile
