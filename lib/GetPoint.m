@@ -1,6 +1,6 @@
 %!octave
 
-function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPoints, t, PrintResult = false)
+function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPoints, t, k = 1.0, PrintResult = false)
 	% Determine the point on a piecewise linear velocity profile
 	% Date: 2020-04-01
 	% Created by: Tyler Matijevich
@@ -32,22 +32,75 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 		printf("GetPoint call failed: Requested time value %.3f exceeds time endpoints %.3f, %.3f\n", t, TimePoints(1), TimePoints(NumberOfPoints));
 		Valid = false;
 		return;
+	
+	elseif (k < 1.0) && (k > 2.0)
+		printf("GetPoint call failed: Invalid acceleration gain %.3f\n", k);
+		Valid = false;
+		return;
 	end
 	
 	% Compute starting position and acceleration for each segment
-	x = zeros(length(TimePoints), 1);
-	v = VelocityPoints; % Copy velocity array
-	a = zeros(length(TimePoints), 1);
+	n = (length(TimePoints) - 1) * 3 + 1;
+	t = zeros(n, 1);
+	xt = zeros(n, 1);
+	vt = zeros(n, 1);
+	at = zeros(n, 1);
+	jt = zeros(n, 1);
+	t(1) = 0.0;
 	x(1) = x0;
+	v(1) = VelocityPoints(1);
+	a(1) = 0.0;
+	% Loop through each macro segment
 	for i = 2:NumberOfPoints
-		% Position given a linear velocity profile
-		x(i) = x(i-1) + 0.5 * (v(i) + v(i-1)) * (TimePoints(i) - TimePoints(i-1));
-		% Constant acceleration - defined for a segment
-		if TimePoints(i) == TimePoints(i-1)
-			a(i-1) = 0.0;
+		i1 = i * 3 - 2; % Current index
+		i0 = ci - 3; % Previous index
+		
+		% Copy time and velocity values
+		t(i1) = TimePoints(i);
+		vt(i1) = VelocityPoints(i);
+		
+		% Determine the average acceleration
+		if t(i1) == t(i0)
+			% Zero jerk
+			jt(i0) = 0.0;
+			jt(i0+1) = 0.0;
+			jt(i0+2) = 0.0;
+			% Stack the profile
+			t(i0+1) 	= t(i0);
+			t(i0+2) 	= t(i0);
+			xt(i0+1) 	= xt(i0);
+			xt(i0+2) 	= xt(i0);
+			xt(i1) 		= xt(i0);
+			vt(i0+1) 	= vt(i0);
+			vt(i0+2) 	= vt(i0);
+			at(i0+1) 	= at(i0);
+			at(i0+2) 	= at(i0);
+			at(i1) 		= at(i0);
+			
 		else
-			a(i-1) = (v(i) - v(i-1)) / (TimePoints(i) - TimePoints(i-1));
-		end
+			sgn = (v(i1) - v(i0)) / abs(v(i1) - v(i0));
+			abar = abs(v(i1) - v(i0)) / (t(i1) = t(i0));
+			[JerkSolution, JerkValid] = GetAcc(t(i1) - t(i0), abs(v(i1) - v(i0)), 0.0, 0.0, 0.0, k * abar, false);
+			if !JerkValid
+				printf("GetPoint call failed: Jerk calculation failed\n");
+				Valid = false;
+				return;
+			else
+				t(i0+1) 	= t(i0) + JerkSolution.t(2);
+				t(i0+2) 	= t(i0) + JerkSolution.t(3);
+				jt(i0) 		= sgn * JerkSolution.a;
+				jt(i0+1) 	= 0.0;
+				jt(i0+1) 	= (-1.0) * sgn * JerkSolution.a;
+				at(i0+1) 	= sgn * JerkSolution.v(2);
+				at(i0+2) 	= sgn * JerkSolution.v(3);
+				at(i0+3) 	= 0.0;
+				vt(i0+1) 	= 0.5 * jt(i0) 	 * (t(i0+1) - t(i0)) ^ 2   + at(i0)   * (t(i0+1) - t(i0))   + vt(i0);
+				vt(i0+2) 	= 0.5 * jt(i0+1) * (t(i0+2) - t(i0+1)) ^ 2 + at(i0+1) * (t(i0+2) - t(i0+1)) + vt(i0+1);
+				xt(i0+1) 	= (1/6) * jt(i0+0) * (t(i0+1) - t(i0+0)) ^ 3 + 0.5 * at(i0+0) * (t(i0+1) - t(i0+0)) ^ 2 + vt(i0+0) * (t(i0+1) - t(i0+0)) + xt(x0);
+				xt(i0+2) 	= (1/6) * jt(i0+1) * (t(i0+2) - t(i0+1)) ^ 3 + 0.5 * at(i0+1) * (t(i0+2) - t(i0+1)) ^ 2 + vt(i0+1) * (t(i0+2) - t(i0+1)) + xt(x0+1);
+				xt(i0+3) 	= (1/6) * jt(i0+2) * (t(i0+3) - t(i0+2)) ^ 3 + 0.5 * at(i0+2) * (t(i0+3) - t(i0+2)) ^ 2 + vt(i0+2) * (t(i0+3) - t(i0+2)) + xt(x0+2);
+			endif
+		endif
 	end
 	
 	% Find the requested segment
