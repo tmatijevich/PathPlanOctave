@@ -33,92 +33,134 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 		Valid = false;
 		return;
 	
+	% #4: Valid jerk factor
 	elseif (k < 1.0) && (k > 2.0)
 		printf("GetPoint call failed: Invalid acceleration gain %.3f\n", k);
 		Valid = false;
 		return;
 	end
 	
-	% Compute starting position and acceleration for each segment
-	n = (length(TimePoints) - 1) * 3 + 1;
-	t = zeros(n, 1);
-	xt = zeros(n, 1);
-	vt = zeros(n, 1);
-	at = zeros(n, 1);
-	jt = zeros(n, 1);
-	t(1) = 0.0;
-	x(1) = x0;
-	v(1) = VelocityPoints(1);
-	a(1) = 0.0;
+	% Compute the micro segments given the macro segments
+	n = (length(TimePoints) - 1) * 3 + 1; % Number of micro segments (two intermediate points each macro segment)
+	t_ 	= zeros(n, 1); % Time
+	xt 	= zeros(n, 1); % Position
+	vt 	= zeros(n, 1); % Velocity
+	at 	= zeros(n, 1); % Acceleration
+	jt 	= zeros(n, 1); % Jerk
+	
+	% Set the initial values of the arrays
+	t_(1) 	= TimePoints(1);
+	xt(1) 	= x0;
+	vt(1) 	= VelocityPoints(1);
+	% Jerk and acceleration for a micro segment is set at the start point of the segment
+	
 	% Loop through each macro segment
 	for i = 2:NumberOfPoints
-		i1 = i * 3 - 2; % Current index
-		i0 = ci - 3; % Previous index
+		b = i * 3 - 2; % Endpoint of the current macro segment
+		a = b - 3; % Startpoint of the current macro segment
+		% 1 2 3 4 5 6 7 8 9 
+		% ^     ^
+		% a     b
+		%       ^     ^ 
+		%       a     b 
+		% a+1, a+2, a+3 required for Position
+		% a+1, a+2      required for Time and Velocity
+		% a+0, a+1, a+2 required for Jerk and Acceleration
 		
-		% Copy time and velocity values
-		t(i1) = TimePoints(i);
-		vt(i1) = VelocityPoints(i);
+		% Copy time and velocity values at the endpoint
+		t_(b) 	= TimePoints(i);
+		vt(b) 	= VelocityPoints(i);
 		
+		% Three cases to consider
+		% 1. No time step - stack all values on the startpoint
+		% 2. Jerk gain of 1.0 - use the average acceleration (infinite jerk)
+		% 3. Jerk gain > 1.0 - determine if the acceleration is saturated
+		
+		% Determine the peak acceleration (assuming a positive velocity change)
+		apeak = (2.0 * abs(vt(b) - vt(a))) / (t_(b) - t_(a));
+		% Determine the sign of the velocity change (sign of acceleration)
+		VelocitySign = (vt(b) - vt(a)) / abs(vt(b) - vt(a)));
 		% Determine the average acceleration
-		if t(i1) == t(i0)
-			% Zero jerk
-			jt(i0) = 0.0;
-			jt(i0+1) = 0.0;
-			jt(i0+2) = 0.0;
-			% Stack the profile
-			t(i0+1) 	= t(i0);
-			t(i0+2) 	= t(i0);
-			xt(i0+1) 	= xt(i0);
-			xt(i0+2) 	= xt(i0);
-			xt(i1) 		= xt(i0);
-			vt(i0+1) 	= vt(i0);
-			vt(i0+2) 	= vt(i0);
-			at(i0+1) 	= at(i0);
-			at(i0+2) 	= at(i0);
-			at(i1) 		= at(i0);
-			
+		abar = abs(vt(b) - vt(a)) / (t_(b) - t_(a));
+		
+		% 1. No time step
+		if t_(b) == t_(a)
+			jt(a) 	= 0.0; % Zero jerk
+			jt(a+1) = 0.0;
+			jt(a+2) = 0.0;
+			at(a) 	= 0.0; % Zero acceleration
+			at(a+1) = 0.0;
+			at(a+2) = 0.0;
+			vt(a+1) = vt(a); % This does not protect against velocity jump (do not change velocity if there's no time step)
+			vt(a+2) = vt(a);
+			xt(a+1) = xt(a);
+			xt(a+2) = xt(a);
+			xt(a+3) = xt(a);
+			t_(a+1) 	= t_(a);
+			t_(a+2) 	= t_(a);
 		else
-			sgn = (v(i1) - v(i0)) / abs(v(i1) - v(i0));
-			abar = abs(v(i1) - v(i0)) / (t(i1) = t(i0));
-			[JerkSolution, JerkValid] = GetAcc(t(i1) - t(i0), abs(v(i1) - v(i0)), 0.0, 0.0, 0.0, k * abar, false);
-			if !JerkValid
-				printf("GetPoint call failed: Jerk calculation failed\n");
-				Valid = false;
-				return;
-			else
-				t(i0+1) 	= t(i0) + JerkSolution.t(2);
-				t(i0+2) 	= t(i0) + JerkSolution.t(3);
-				jt(i0) 		= sgn * JerkSolution.a;
-				jt(i0+1) 	= 0.0;
-				jt(i0+1) 	= (-1.0) * sgn * JerkSolution.a;
-				at(i0+1) 	= sgn * JerkSolution.v(2);
-				at(i0+2) 	= sgn * JerkSolution.v(3);
-				at(i0+3) 	= 0.0;
-				vt(i0+1) 	= 0.5 * jt(i0) 	 * (t(i0+1) - t(i0)) ^ 2   + at(i0)   * (t(i0+1) - t(i0))   + vt(i0);
-				vt(i0+2) 	= 0.5 * jt(i0+1) * (t(i0+2) - t(i0+1)) ^ 2 + at(i0+1) * (t(i0+2) - t(i0+1)) + vt(i0+1);
-				xt(i0+1) 	= (1/6) * jt(i0+0) * (t(i0+1) - t(i0+0)) ^ 3 + 0.5 * at(i0+0) * (t(i0+1) - t(i0+0)) ^ 2 + vt(i0+0) * (t(i0+1) - t(i0+0)) + xt(x0);
-				xt(i0+2) 	= (1/6) * jt(i0+1) * (t(i0+2) - t(i0+1)) ^ 3 + 0.5 * at(i0+1) * (t(i0+2) - t(i0+1)) ^ 2 + vt(i0+1) * (t(i0+2) - t(i0+1)) + xt(x0+1);
-				xt(i0+3) 	= (1/6) * jt(i0+2) * (t(i0+3) - t(i0+2)) ^ 3 + 0.5 * at(i0+2) * (t(i0+3) - t(i0+2)) ^ 2 + vt(i0+2) * (t(i0+3) - t(i0+2)) + xt(x0+2);
-			endif
-		endif
-	end
+			if k > 1.0 % Determine if there is infinite jerk (k = 1.0)
+				if apeak <= k*abar % Determine if the acceleration profile will be saturated
+					% Unstaturated acceleration profile
+					t_(a+1) 	= t_(a) + (t_(b) - t_(a)) / 2.0;
+					t_(a+2) 	= t_(a+1);
+					jt(a) 	= VelocitySign * apeak / ((t_(b) - t_(a)) / 2.0);
+					jt(a+1) = 0.0;
+					jt(a+2) = (-1.0) * jt(a);
+					at(a) 	= 0.0;
+					at(a+1) = VelocitySign * apeak;
+					at(a+2) = VelocitySign * apeak;
+				else
+					% Saturated acceleration profile
+					NominalJerk = ((k*abar) ^ 2) / (k*abar * (t_(b) - t_(a)) - abs(vt(a) - vt(b)));
+					jt(a) 	= VelocitySign * NominalJerk;
+					jt(a+1) = 0.0;
+					jt(a+2) = (-1.0) * jt(a);
+					at(a) 	= 0.0;
+					at(a+1) = VelocitySign * k*abar;
+					at(a+2) = VelocitySign * k*abar;
+					t_(a+1) 	= t_(a) + k*abar / NominalJerk;
+					t_(a+2) 	= t_(b) - k*abar / NominalJerk;
+				endif % Saturated acceleration?
+			else % Infinite jerk
+				% Stack the timepoints
+				t_(a+1) 	= t_(a);
+				t_(a+2) 	= t_(a);
+				jt(a) 	= 0.0; % Zero jerk
+				jt(a+1) = 0.0;
+				jt(a+2) = 0.0;
+				at(a) 	= VelocitySign * abar;
+				at(a+1) = at(a);
+				at(a+2) = at(a);
+			endif % Infinite jerk?
+			% Set the micro segment Position and Velocity
+			vt(a+1) = 0.5 * jt(a+0) * (t_(a+1) - t_(a+0)) ^ 2 + at(a+0) * (t_(a+1) - t_(a+0)) + vt(a+0);
+			vt(a+2) = 0.5 * jt(a+1) * (t_(a+2) - t_(a+1)) ^ 2 + at(a+1) * (t_(a+2) - t_(a+1)) + vt(a+1);
+			xt(a+1) = (1/6) * jt(a+0) * (t_(a+1) - t_(a+0)) ^ 3 + 0.5 * at(a+0) * (t_(a+1) - t_(a+0)) ^ 2 + vt(a+0) * (t_(a+1) - t_(a+0)) + xt(a+0);
+			xt(a+2) = (1/6) * jt(a+1) * (t_(a+2) - t_(a+1)) ^ 3 + 0.5 * at(a+1) * (t_(a+2) - t_(a+1)) ^ 2 + vt(a+1) * (t_(a+2) - t_(a+1)) + xt(a+1);
+			xt(a+3) = (1/6) * jt(a+2) * (t_(a+3) - t_(a+2)) ^ 3 + 0.5 * at(a+2) * (t_(a+3) - t_(a+2)) ^ 2 + vt(a+2) * (t_(a+3) - t_(a+2)) + xt(a+2);
+		endif % Non-zero time step?
+	end % Loop macro segments
 	
 	% Find the requested segment
 	if t == TimePoints(NumberOfPoints)
-		Segment = NumberOfPoints - 1;
+		seg = n - 1;
+	elseif t == TimePoints(1)
+		seg = 1;
 	else
-		for i = 2:NumberOfPoints
-			if t < TimePoints(i)
-				Segment = i - 1;
+		for i = 2:n
+			if t < t_(i)
+				seg = i - 1;
 				break;
 			end % Within time?
 		end % Loop array
 	end % Final segment?
 	
 	% Set solution
-	Solution.a = a(Segment);
-	Solution.v = v(Segment) + a(Segment) * (t - TimePoints(Segment));
-	Solution.x = x(Segment) + v(Segment) * (t - TimePoints(Segment)) + 0.5 * a(Segment) * (t - TimePoints(Segment)) ^ 2;
+	Solution.j = jt(seg);
+	Solution.a = jt(seg) * (t - t_(seg)) + at(seg);
+	Solution.v = 0.5 * jt(seg) * (t - t_(seg)) ^ 2 + at(seg) * (t - t_(seg)) + vt(seg);
+	Solution.x = (1/6) * jt(seg) * (t - t_(seg)) ^ 3 + 0.5 * at(seg) * (t - t_(seg)) ^ 2 + vt(seg) * (t - t_(seg)) + xt(seg);
 	Valid = true; 
 	
 	if PrintResult
