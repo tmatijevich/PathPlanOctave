@@ -8,8 +8,9 @@ P{4} = [0, 3, 2];
 P{5} = [0, 0, 2];
 P{6} = [0, 0, 0];
 P{7} = [1, 2, 1];
+P{8} = [0.2, -0.4, 0.2];
 
-for i = 1:7
+for i = 1:length(P)
 	printf("Coefficients: %.3f, %.3f, %.3f\n", P{i}(1), P{i}(2), P{i}(3));
 	r = roots(P{i});
 	switch(length(r))
