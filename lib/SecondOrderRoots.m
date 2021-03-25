@@ -22,7 +22,7 @@ function [Solution, Valid] = SecondOrderRoots(p2, p1, p0, PrintResult = false)
 			Valid = false;
 			return;
 			
-		else % Multiple roots
+		else % Multiple root
 			Solution.r1 = (-p1) / (2.0 * p2);
 			Solution.r2 = Solution.r1;
 			
@@ -31,7 +31,7 @@ function [Solution, Valid] = SecondOrderRoots(p2, p1, p0, PrintResult = false)
 	else % First order
 		if p1 != 0 % Single root
 			Solution.r1 = (-p0) / p1;
-			Solution.r2 = Solution.r1;
+			Solution.r2 = Solution.r1; % This function does not distinquish between a multiple root and a single root
 			
 		else % No roots
 			printf("SecondOrderRoots call warning: First order, no solution\n");
