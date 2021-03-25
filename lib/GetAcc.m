@@ -82,7 +82,7 @@ function [Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax, PrintResult = fa
 		
 	else % 1. DEC 2. ACC
 		% Determine if saturated profile
-		VminDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * ((v0 + vf - 2.0 * vmin) / dt))
+		VminDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * ((v0 + vf - 2.0 * vmin) / dt));
 		% NOTE: There is no dx < NominalDistance when v0 = vf = vmin that also passes requirement #4. This protects against divide by zero.
 		
 		if dx > VminDistance % Dec/acc profile with dip
