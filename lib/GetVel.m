@@ -53,8 +53,8 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 		
 	end % Requirements
 	
-	% Check if the distance can be fulfilled given the acceleration, max velocity, and time
-	vpeak = (dt * a + v0 + vf) / 2.0;
+	% Check if the distance can be fulfilled given the time duration, velocity limits, and acceleration
+	vpeak = (a * dt + v0 + vf) / 2.0;
 	if vpeak <= vmax
 		MaxDistance = (2.0 * vpeak ^ 2 - v0 ^ 2 - vf ^ 2) / (2.0 * a);
 	else
@@ -66,7 +66,7 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 		return;
 	end
 	
-	vdip = (dt * a - v0 - vf) / 2.0;
+	vdip = (v0 + vf - a * dt) / 2.0;
 	if vdip >= vmin
 		MinDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vdip ^ 2) / (2.0 * a);
 	else
@@ -106,9 +106,9 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 		% Assume the move is a saturated approaching a peak profile only when dx = MaxDistance and vpeak <= vmax
 		Solution.Move = PATH_ACC_DEC_SATURATED;
 		
-		p2 = - 1.0 / a;
-		p1 = dt - NominalTime + (2.0 * max(v0, vf)) / a;
-		p0 = NominalDistance - dx - (max(v0, vf) ^ 2) / a;
+		p2 = - 1.0;
+		p1 = a * (dt - NominalTime) + 2.0 * max(v0, vf);
+		p0 = (-1.0) * max(v0, vf) ^ 2 - a * (dx - NominalDistance);
 		
 	elseif a1Sign == a2Sign % ACC_ACC or DEC_DEC
 		if a1Sign == 1.0
@@ -122,9 +122,9 @@ function [Solution, Valid] = GetVel(dt, dx, v0, vf, vmin, vmax, a, PrintResult =
 	else % DEC_ACC
 		Solution.Move = PATH_DEC_ACC_SATURATED;
 		
-		p2 = 1.0 / a;
-		p1 = dt - NominalTime - (2.0 * min(v0, vf)) / a;
-		p0 = NominalDistance - dx + (min(v0, vf) ^ 2) / a;
+		p2 = 1.0;
+		p1 = a * (dt - NominalTime) - 2.0 * min(v0, vf);
+		p0 = min(v0, vf) ^ 2 - a * (dx - NominalDistance);
 		
 	end
 	
