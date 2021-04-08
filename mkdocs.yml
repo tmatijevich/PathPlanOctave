@@ -2,6 +2,10 @@ site_name: My Docs
 site_dir: ..\PathPlanDocsRelease
 theme:
   name: material
+nav:
+  - 'Introduction.md'
+  - 'Common.md'
+  - 'GetAcc.md'
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
