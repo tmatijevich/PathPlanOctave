@@ -1,0 +1,512 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.1.0">
+    
+    
+      
+        <title>GetAcc Function - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.33e2939f.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ef6f36e2.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../css/style.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#getacc-function" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GetAcc Function
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Common/" class="md-nav__link">
+        Common Equations
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          GetAcc Function
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        GetAcc Function
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-getaccdt-dx-v0-vf-vmin-vmax" class="md-nav__link">
+    a = GetAcc(dt, dx, v0, vf, vmin, vmax)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    Inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-conditions" class="md-nav__link">
+    Input Conditions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#derivation" class="md-nav__link">
+    Derivation
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-getaccdt-dx-v0-vf-vmin-vmax" class="md-nav__link">
+    a = GetAcc(dt, dx, v0, vf, vmin, vmax)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inputs" class="md-nav__link">
+    Inputs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-conditions" class="md-nav__link">
+    Input Conditions
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#derivation" class="md-nav__link">
+    Derivation
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="getacc-function">GetAcc Function</h1>
+<h2 id="a-getaccdt-dx-v0-vf-vmin-vmax"><code>a = GetAcc(dt, dx, v0, vf, vmin, vmax)</code></h2>
+<p><em>Determine the minimum acceleration to change velocity in time over a distance.</em></p>
+<h2 id="inputs">Inputs</h2>
+<ul>
+<li><code>dt</code> Time duration</li>
+<li><code>dx</code> Distance</li>
+<li><code>v0</code> Initial velocity</li>
+<li><code>vf</code> Final velocity</li>
+<li><code>vmin</code> Minimum velocity</li>
+<li><code>vmax</code> Maximum velocity</li>
+</ul>
+<h2 id="input-conditions">Input Conditions</h2>
+<ol>
+<li><span class="arithmatex">\(\quad 0 \leq v_{min} &lt; v_{max}\)</span></li>
+<li><span class="arithmatex">\(\quad v_{min} \leq v_0 \leq v_{max} \;,\; v_{min} \leq v_f \leq v_{max}\)</span></li>
+<li><span class="arithmatex">\(\quad \delta t \;,\; \delta x &gt; 0\)</span></li>
+<li><span class="arithmatex">\(\quad v_{min} \, \delta t &lt; \delta x &lt; v_{max} \, \delta t\)</span></li>
+</ol>
+<h2 id="derivation">Derivation</h2>
+<p>Define a nominal distance, <span class="arithmatex">\(\bar{x}\)</span>. </p>
+<ul>
+<li>This is the distance if the acceleration magnitude matches the exact time to change velocity from <span class="arithmatex">\(v_0\)</span> to <span class="arithmatex">\(v_f\)</span>.</li>
+</ul>
+<div class="arithmatex">\[
+\bar{x} = \frac{1}{2} \delta t (v_0 + v_f)
+\]</div>
+<p>Given the time duration, determine the acceleration <span class="arithmatex">\(a_{s.l.max}\)</span> at the saturation limit of the velocity maximizing profile. </p>
+<ul>
+<li>This is a two-segment velocity profile with symmetric acceleration magnitudes.</li>
+<li><span class="arithmatex">\(v_{max} \geq v_0, v_f\)</span> from the input conditions.</li>
+</ul>
+<div class="arithmatex">\[
+a_{s.l.max} = \frac{2 v_{max} - v_0 - v_f}{\delta t}
+\]</div>
+<p>Now determine the distance at the saturation limit of the velocity maximizing profile. </p>
+<div class="arithmatex">\[
+{\delta x}_{s.l.max} = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a_{s.l.max}}
+\]</div>
+<p>Re-written in terms of all inputs.</p>
+<div class="arithmatex">\[
+{\delta x}_{s.l.max} = \frac{(2 v_{max}^2 - v_0^2 - v_f^2) \delta t}{2 v_{max} - v_0 - v_f}
+\]</div>
+<p>The same approach can be completed for the velocity minimizing profile.</p>
+<div class="arithmatex">\[
+{\delta x}_{s.l.min} = \frac{(v_0^2 + v_f^2 - 2 v_{min}^2) \delta t}{v_0 + v_f - 2 v_{min}}
+\]</div>
+<p>The solution of the acceleration magnitude now comes down to four cases.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PATH_ACC_DEC_SATURATED</code></td>
+<td><span class="arithmatex">\(\delta x \geq \bar{x} \;,\; \delta x \geq {\delta x}_{s.l.max}\)</span></td>
+</tr>
+<tr>
+<td><code>PATH_ACC_DEC_PEAK</code></td>
+<td><span class="arithmatex">\(\delta x \geq \bar{x} \;,\; \delta x &lt; {\delta x}_{s.l.max}\)</span></td>
+</tr>
+<tr>
+<td><code>PATH_DEC_ACC_PEAK</code></td>
+<td><span class="arithmatex">\(\delta x &lt; \bar{x} \;,\; \delta x &gt; {\delta x}_{s.l.min}\)</span></td>
+</tr>
+<tr>
+<td><code>PATH_DEC_ACC_SATURATED</code></td>
+<td><span class="arithmatex">\(\delta x &lt; \bar{x} \;,\; \delta x \leq {\delta x}_{s.l.min}\)</span></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>
+<p>The profile is saturated at <span class="arithmatex">\(v_{max}\)</span> for some time, <span class="arithmatex">\(t_{12}\)</span>.</p>
+<div class="arithmatex">\[
+\delta t = \frac{2 v_{max} - v_0 - v_f}{a} + t_{12} \quad \delta x = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a} + t_{12} v_{max}
+\]</div>
+<ul>
+<li>Reduce the equations by eliminating <span class="arithmatex">\(t_{12}\)</span>.</li>
+</ul>
+<div class="arithmatex">\[
+\delta x = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a} + (\delta t - \frac{2 v_{max} - v_0 - v_f}{a}) v_{max}
+\]</div>
+<ul>
+<li>Solve for <span class="arithmatex">\(a\)</span>.</li>
+</ul>
+<div class="arithmatex">\[
+a = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 (\delta x - \delta t \, v_{max})} - \frac{2 v_{max} - v_0 - v_f}{\delta x - \delta t \, v_{max}}
+\]</div>
+</li>
+<li>
+<p>The profile is unsaturated with a peak velocity, <code>PATH_ACC_DEC_SATURATED</code>.</p>
+<div class="arithmatex">\[
+\delta t = \frac{2 v_{peak} - v_0 - v_f}{a} \quad \delta x = \frac{2 v_{peak}^2 - v_0 ^ 2 - v_f^2}{2 \, a}
+\]</div>
+<div class="arithmatex">\[
+2 \delta x \frac{2 v_{peak} - v_0 - v_f}{\delta t} = 2 v_{peak}^2 - v_0^2 - v_f^2
+\]</div>
+<div class="arithmatex">\[
+0 = \underbrace{2 \delta t}_{p_2} v_{peak}^2 + \underbrace{(-4 \delta x)}_{p_1} v_{peak} + \underbrace{2 \delta x (v_0 + v_f) - \delta t (v_0^2 + v_f^2)}_{p_0}
+\]</div>
+<p>Use the second order roots solution for <span class="arithmatex">\(v_{peak}\)</span>, then solve for <span class="arithmatex">\(a\)</span>.</p>
+<div class="arithmatex">\[
+a = \frac{2 v_{peak} - v_0 - v_f}{\delta t}
+\]</div>
+</li>
+</ol>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../Common/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Common Equations
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../assets/javascripts/workers/search.fe42c31b.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d892486b.min.js"></script>
+      
+        <script src="../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
