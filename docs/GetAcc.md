@@ -61,8 +61,8 @@ The solution of the acceleration magnitude now comes down to four cases.
 
 Case | Condition
 -----|----------
-`PATH_ACC_DEC_PEAK` | $\delta x \geq \bar{x} \;,\; \delta x < {\delta x}_{s.l.max}$
 `PATH_ACC_DEC_SATURATED` | $\delta x \geq \bar{x} \;,\; \delta x \geq {\delta x}_{s.l.max}$
+`PATH_ACC_DEC_PEAK` | $\delta x \geq \bar{x} \;,\; \delta x < {\delta x}_{s.l.max}$
 `PATH_DEC_ACC_PEAK` | $\delta x < \bar{x} \;,\; \delta x > {\delta x}_{s.l.min}$
 `PATH_DEC_ACC_SATURATED` | $\delta x < \bar{x} \;,\; \delta x \leq {\delta x}_{s.l.min}$
 
@@ -88,4 +88,18 @@ Case | Condition
 
 	$$
 	\delta t = \frac{2 v_{peak} - v_0 - v_f}{a} \quad \delta x = \frac{2 v_{peak}^2 - v_0 ^ 2 - v_f^2}{2 \, a}
+	$$
+	
+	$$
+	2 \delta x \frac{2 v_{peak} - v_0 - v_f}{\delta t} = 2 v_{peak}^2 - v_0^2 - v_f^2
+	$$
+	
+	$$
+	0 = \underbrace{2 \delta t}_{p_2} v_{peak}^2 + \underbrace{(-4 \delta x)}_{p_1} v_{peak} + \underbrace{2 \delta x (v_0 + v_f) - \delta t (v_0^2 + v_f^2)}_{p_0}
+	$$
+	
+	Use the second order roots solution for $v_{peak}$, then solve for $a$.
+	
+	$$
+	a = \frac{2 v_{peak} - v_0 - v_f}{\delta t}
 	$$
