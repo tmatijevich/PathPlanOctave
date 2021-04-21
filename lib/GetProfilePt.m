@@ -1,6 +1,6 @@
 %!octave
 
-function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPoints, t, k = 1.0, PrintResult = false)
+function [Solution, Valid] = GetProfilePt(x0, TimePoints, VelocityPoints, NumberOfPoints, t, k = 1.0, PrintResult = false)
 	% Determine the point on a piecewise linear velocity profile
 	% Date: 2020-04-01
 	% Created by: Tyler Matijevich
@@ -13,7 +13,7 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 	% Input requirements
 	% #1: Number of points
 	if (NumberOfPoints < 2) || (NumberOfPoints > min(length(TimePoints), length(VelocityPoints)))
-		printf("GetPoint call failed: Number of points %d exceeds limits %d, %d\n", NumberOfPoints, 2, min(length(TimePoints), length(VelocityPoints)));
+		printf("GetProfilePt call failed: Number of points %d exceeds limits %d, %d\n", NumberOfPoints, 2, min(length(TimePoints), length(VelocityPoints)));
 		Valid = false;
 		return;
 	end
@@ -21,7 +21,7 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 	% #2: Sequential times
 	for i = 2:NumberOfPoints
 		if TimePoints(i) < TimePoints(i - 1)
-			printf("GetPoint call failed: Time point %d, %.3f is less than point %d, %.3f\n", i, TimePoints(i), i - 1, TimePoints(i-1));
+			printf("GetProfilePt call failed: Time point %d, %.3f is less than point %d, %.3f\n", i, TimePoints(i), i - 1, TimePoints(i-1));
 			Valid = false;
 			return;
 		end % Higher index, less time?
@@ -29,13 +29,13 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 	
 	% #3: Valid request time
 	if (t < TimePoints(1)) || (t > TimePoints(NumberOfPoints))
-		printf("GetPoint call failed: Requested time value %.3f exceeds time endpoints %.3f, %.3f\n", t, TimePoints(1), TimePoints(NumberOfPoints));
+		printf("GetProfilePt call failed: Requested time value %.3f exceeds time endpoints %.3f, %.3f\n", t, TimePoints(1), TimePoints(NumberOfPoints));
 		Valid = false;
 		return;
 	
 	% #4: Valid jerk factor
 	elseif (k < 1.0) && (k > 2.0)
-		printf("GetPoint call failed: Invalid acceleration gain %.3f\n", k);
+		printf("GetProfilePt call failed: Invalid acceleration gain %.3f\n", k);
 		Valid = false;
 		return;
 	end
@@ -169,7 +169,7 @@ function [Solution, Valid] = GetPoint(x0, TimePoints, VelocityPoints, NumberOfPo
 	Valid = true; 
 	
 	if PrintResult
-		printf("GetPoint call: Pos %.3f, Vel %.3f, Acc %.3f\n", Solution.x, Solution.v, Solution.a);
+		printf("GetProfilePt call: Pos %.3f, Vel %.3f, Acc %.3f\n", Solution.x, Solution.v, Solution.a);
 	end
 	
 end % Function

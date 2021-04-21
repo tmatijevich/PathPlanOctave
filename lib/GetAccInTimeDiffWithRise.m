@@ -1,7 +1,7 @@
 %!octave
 
-function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_min, v_max, printResult = false)
-	% GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_min, v_max, printResult = false)
+function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
+	% GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
 	% Determine the minimum acceleration to achieve movement extremes given the time difference and including a rise from standstill
 	% Assumptions:
 	% 	- Positive distance and velocity
@@ -43,14 +43,14 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_
 		return;
 	
 	% #3: Positive time difference and distance
-	elseif (dt_tilda <= 0.0) || (dx <= 0.0)
-		printf("GetAccInTimeDiffWithRise call failed: Time difference or distance non-positive %.3f, %.3f\n", dt_tilda, dx); 
+	elseif (dt_tilde <= 0.0) || (dx <= 0.0)
+		printf("GetAccInTimeDiffWithRise call failed: Time difference %.3f or distance %.3f is non-positive\n", dt_tilde, dx); 
 		valid = false; 
 		return;
 		
 	% #4: Valid time difference given distance and velocity limits
-	elseif (dt_tilda >= (dx / v_min - dx / v_max))
-		printf("GetAccInTimeDiffWithRise call failed: Impossible time difference %.3f given distance and velocity limits, < %.3f\n", dt_tilda, dx / v_min - dx / v_max); 
+	elseif (dt_tilde >= (dx / v_min - dx / v_max))
+		printf("GetAccInTimeDiffWithRise call failed: Time difference %.3f exceeds limit %.3f given distance, velocity limits, and infinite acceleration\n", dt_tilde, dx / v_min - dx / v_max); 
 		valid = false; 
 		return;
 		
@@ -84,8 +84,8 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_
 	end
 	
 	% Determine the time difference at both saturation limits
-	dt_u_tilda = dt_u_hat - dt_u; % For the same acceleration, a_u, the Acc>dec profile is always quicker than the Dec>acc profile
-	dt_l_tilda = dt_l - dt_l_hat;
+	dt_u_tilde = dt_u_hat - dt_u; % For the same acceleration, a_u, the Acc>dec profile is always quicker than the Dec>acc profile
+	dt_l_tilde = dt_l - dt_l_hat;
 	
 	% Compute reduction constants
 	c_dtA = 2.0 * v_max - v_f;
@@ -94,45 +94,45 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_
 	c_dxD = (2.0 * v_1 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * v_min);
 	
 	% There are four cases to consider given the time difference
-	% 1. dt_tilda >= dt_u_tilda && dt_tilda >= dt_l_tilda
-	% 2. dt_tilda  < dt_u_tilda && dt_tilda >= dt_l_tilda
-	% 3. dt_tilda >= dt_u_tilda && dt_tilda  < dt_l_tilda
-	% 4. dt_tilda  < dt_u_tilda && dt_tilda  < dt_l_tilda
+	% 1. dt_tilde >= dt_u_tilde && dt_tilde >= dt_l_tilde
+	% 2. dt_tilde  < dt_u_tilde && dt_tilde >= dt_l_tilde
+	% 3. dt_tilde >= dt_u_tilde && dt_tilde  < dt_l_tilde
+	% 4. dt_tilde  < dt_u_tilde && dt_tilde  < dt_l_tilde
 	
 	requires2ndOrderSolution = false;
 	
 	% 1. Time difference exceeds both saturation limits
-	if (dt_tilda >= dt_u_tilda) && (dt_tilda >= dt_l_tilda)
+	if (dt_tilde >= dt_u_tilde) && (dt_tilde >= dt_l_tilde)
 		% Compute the acceleration
 		solution.accDec.move = PATH_ACC_DEC_SATURATED;
 		solution.decAcc.move = PATH_DEC_ACC_SATURATED;
 		
-		solution.accDec.a = (c_dtD - c_dtA - (c_dxD - c_dxA)) / (dt_tilda - dx * (1.0 / v_min - 1.0 / v_max));
+		solution.accDec.a = (c_dtD - c_dtA - (c_dxD - c_dxA)) / (dt_tilde - dx * (1.0 / v_min - 1.0 / v_max));
 		solution.decAcc.a = solution.accDec.a;
 		
 	% 2. Time difference below v_max saturation limit
-	elseif (dt_tilda < dt_u_tilda) && (dt_tilda >= dt_l_tilda)
+	elseif (dt_tilde < dt_u_tilde) && (dt_tilde >= dt_l_tilde)
 		% Prepare for second order solution
 		solution.accDec.move = PATH_ACC_DEC_PEAK;
 		solution.decAcc.move = PATH_DEC_ACC_SATURATED;
 		
 		c_1 = (v_f ^ 2) / 2.0;
 		c_2 = c_dtD - c_dxD + v_f;
-		c_3 = dt_tilda - (dx / v_min);
+		c_3 = dt_tilde - (dx / v_min);
 		p_2 = c_3 ^ 2;
 		p_1 = - 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
 		requires2ndOrderSolution = true;
 		
 	% 3. Time difference below v_min saturation limit
-	elseif (dt_tilda >= dt_u_tilda) && (dt_tilda < dt_l_tilda)
+	elseif (dt_tilde >= dt_u_tilde) && (dt_tilde < dt_l_tilde)
 		% Prepare for second order solution
 		solution.accDec.move = PATH_ACC_DEC_SATURATED;
 		solution.decAcc.move = PATH_DEC_ACC_PEAK;
 		
 		c_1 = (2.0 * v_1 ^ 2 + v_f ^ 2) / 2.0;
 		c_2 = 2.0 * v_1 + v_f - (c_dtA - c_dxA);
-		c_3 = dt_tilda + (dx / v_max);
+		c_3 = dt_tilde + (dx / v_max);
 		p_2 = c_3 ^ 2;
 		p_1 = 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
@@ -141,7 +141,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_
 	% 4. Time difference below both saturation limits
 	else
 		% Use the saturated acceleration limit from the smaller of the saturated time difference limits
-		if dt_u_tilda < dt_l_tilda % a_u < a_l
+		if dt_u_tilde < dt_l_tilde % a_u < a_l
 			solution.accDec.move = PATH_ACC_DEC_SATURATED;
 			solution.decAcc.move = PATH_DEC_ACC_PEAK;
 			solution.accDec.a = a_u;
@@ -154,7 +154,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_
 			solution.decAcc.a = a_l;
 		end
 		printf("GetAccInTimeDiffWithRise call warning: Requires higher order solution, using best known value\n")
-	end % dt_tilda cases
+	end % dt_tilde cases
 	
 	if requires2ndOrderSolution
 		[rootsSolution, rootsValid] = SecondOrderRoots(p_2, p_1, p_0);
