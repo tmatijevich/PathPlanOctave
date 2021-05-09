@@ -15,31 +15,31 @@ This library assumes:
 - Zero jerk.
 
 List of functions:
-- GetAcc
+- PathAcc
 	- `a = GetAcc(dt, dx, v0, vf, vmin, vmax)`
 	- Determine the minimum acceleration to move in time over a distance.
-- GetTimeDur
+- PathTime
 	- `dt = GetTimeDur(dx, v0, vf, vmin, vmax, a)`
 	- Determine the minimum time to move with acceleration over a distance.
-- GetDist
+- PathDist
 	- `dx = GetDist(dt, v0, vf, vmin, vmax, a)`
 	- Determine the maximum distance to move with acceleration in time.
-- GetVel
+- PathVel
 	- `v = GetVel(dt, dx, v0, vf, vmin, vmax, a)`
 	- Determine the minimum intermediate velocity to move with acceleration in time over a distance.
-- GetTimeDiff
+- PathTimeDiff
 	- `tdiff = GetTimeDiff(dx, v0, vf, vmin, vmax, a)`
 	- Determine the difference between the time minimizing and time maximizing velocity profiles.
-- GetAccInTimeDiff
+- PathAccInTimeDiff
 	- `a = GetAccInTimeDiff(tdiff, dx, v0, vf, vmin, vmax)`
 	- Determine the minimum acceleration required to achieve movement extremes within a given time difference.
-- GetAccInTimeDiffWithRise
+- PathAccInTimeDiffWithRise
 	- `a = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_min, v_max)`
 	- Same as `GetAccInTimeDiff`, but also consider an initial rise in velocity from standstill.
-- SecondOrderRoot
+- PathRoot
 	- `r1, r2 = SecondOrderRoot(p2, p1, p0)`
 	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p2 * x^2 + p1 * x + p0 = 0`.
-- GetProfilePt
+- PathPoint
 	- `x, v, a = GetProfilePt(x0, t[i], v[i], n, t*)`
 	- Determine the position, velocity, and acceleration at a time point along a velocity point profile.
 	

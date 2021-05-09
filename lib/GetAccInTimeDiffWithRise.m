@@ -18,14 +18,14 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 	global PATH_ACC_DEC_SATURATED;
 	
 	% Reset solution
-	solution.accDec.t 		= [0.0, 0.0, 0.0, 0.0];
+	solution.accDec.t 		= [0.0, 0.0, 0.0, 0.0, 0.0];
 	solution.accDec.dx 		= 0.0;
-	solution.accDec.v 		= [0.0, 0.0, 0.0, 0.0];
+	solution.accDec.v 		= [0.0, 0.0, 0.0, 0.0, 0.0];
 	solution.accDec.a 		= 0.0;
 	solution.accDec.move 	= PATH_MOVE_NONE;
-	solution.decAcc.t 		= [0.0, 0.0, 0.0, 0.0];
+	solution.decAcc.t 		= [0.0, 0.0, 0.0, 0.0, 0.0];
 	solution.decAcc.dx 		= 0.0;
-	solution.decAcc.v 		= [0.0, 0.0, 0.0, 0.0];
+	solution.decAcc.v 		= [0.0, 0.0, 0.0, 0.0, 0.0];
 	solution.decAcc.a 		= 0.0;
 	solution.decAcc.move 	= PATH_MOVE_NONE;
 	
@@ -50,7 +50,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 		
 	% #4: Valid time difference given distance and velocity limits
 	elseif (dt_tilde >= (dx / v_min - dx / v_max))
-		printf("GetAccInTimeDiffWithRise call failed: Time difference %.3f exceeds limit %.3f given distance, velocity limits, and infinite acceleration\n", dt_tilde, dx / v_min - dx / v_max); 
+		printf("GetAccInTimeDiffWithRise call failed: Time difference %.3f exceeds acceleration limit %.3f\n", dt_tilde, dx / v_min - dx / v_max); 
 		valid = false; 
 		return;
 		
@@ -109,6 +109,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 		
 		solution.accDec.a = (c_dtD - c_dtA - (c_dxD - c_dxA)) / (dt_tilde - dx * (1.0 / v_min - 1.0 / v_max));
 		solution.decAcc.a = solution.accDec.a;
+		solutionCase = 1;
 		
 	% 2. Time difference below v_max saturation limit
 	elseif (dt_tilde < dt_u_tilde) && (dt_tilde >= dt_l_tilde)
@@ -123,6 +124,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 		p_1 = - 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
 		requires2ndOrderSolution = true;
+		solutionCase = 2;
 		
 	% 3. Time difference below v_min saturation limit
 	elseif (dt_tilde >= dt_u_tilde) && (dt_tilde < dt_l_tilde)
@@ -137,6 +139,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 		p_1 = 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
 		requires2ndOrderSolution = true;
+		solutionCase = 3;
 		
 	% 4. Time difference below both saturation limits
 	else
@@ -153,7 +156,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 			solution.accDec.a = a_l;
 			solution.decAcc.a = a_l;
 		end
-		printf("GetAccInTimeDiffWithRise call warning: Requires higher order solution, using best known value\n")
+		solutionCase = 4;
 	end % dt_tilde cases
 	
 	if requires2ndOrderSolution
@@ -185,7 +188,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 		solution.accDec.v(5) = v_f;
 		solution.accDec.t(3) = v_max / solution.accDec.a;
 		solution.accDec.t(4) = v_max / solution.accDec.a + (dx - ((2.0 * v_max ^ 2 - v_f ^ 2) / (2.0 * solution.accDec.a))) / v_max;
-		solution.accDec.t(4) = v_max / solution.accDec.a + (dx - ((2.0 * v_max ^ 2 - v_f ^ 2) / (2.0 * solution.accDec.a))) / v_max + (v_max - v_f) / solution.accDec.a;
+		solution.accDec.t(5) = v_max / solution.accDec.a + (dx - ((2.0 * v_max ^ 2 - v_f ^ 2) / (2.0 * solution.accDec.a))) / v_max + (v_max - v_f) / solution.accDec.a;
 	else
 		v_p = sqrt(dx * solution.accDec.a + (v_f ^ 2) / 2.0);
 		solution.accDec.v(3) = v_p;
@@ -222,7 +225,7 @@ function [solution, valid] = GetAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_
 	valid = true;
 	
 	if printResult
-		printf("GetAccInTimeDiffWithRise call: a = %.3f, Moves %d, %d\n", solution.accDec.a, solution.accDec.move, solution.decAcc.move);
+		printf("GetAccInTimeDiffWithRise call: a = %.3f, Case %d, Moves %d, %d\n", solution.accDec.a, solutionCase, solution.accDec.move, solution.decAcc.move);
 	end
 	
 end % Function
