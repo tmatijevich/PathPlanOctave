@@ -37,8 +37,8 @@ hold on;
 hPlot2 = plot(t, v, "k.", "markersize", pointSize);
 ylim([0.0, 2.5]);
 hLeg = legend([hPlot2, hPlot1], {"Input Points", "Interpolated Points"}, "location", "northeast");
-set(hLeg, "fontsize", textSize);
 set(gca, "fontsize", tickSize);
+set(hLeg, "fontsize", textSize);
 ylabel("Velocity", "fontsize", textSize);
 
 subplot(3,1,3); cla;

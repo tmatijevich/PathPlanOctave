@@ -134,10 +134,10 @@ hLeg = legend([
 	'Rise',
 	'ACC DEC',
 	'DEC ACC',
-	'Capture window {\delta}t_{tilde}'}
+	'Capture window'}
 );
-set(hLeg, "fontsize", fontSize);
-
+% set(hLeg, "fontsize", fontSize);
+% 
 xlabel("Time [s]", "fontsize", fontSize);
 ylabel('Velocity [Units/s]', "fontsize", fontSize);
 

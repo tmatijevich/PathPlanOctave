@@ -18,6 +18,6 @@ for i = 1:length(P)
 		case 1 printf("Octave roots call: %.3f\n", r);
 	 	case 2 printf("Octave roots call: %.3f%+.3fj, %.3f%+.3fj\n", real(r(1)), imag(r(1)), real(r(2)),  imag(r(2)));
 	end
-	[Solution, Valid] = SecondOrderRoots(P{i}(1), P{i}(2), P{i}(3), true);
+	[Solution, Valid] = PathRoots(P{i}(1), P{i}(2), P{i}(3), true);
 	printf("\n");
 end
