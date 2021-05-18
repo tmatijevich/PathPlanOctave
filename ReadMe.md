@@ -47,9 +47,18 @@ List of functions:
 
 This library describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, plus an intermediate velocity saturated by the limits.
 
+![2021-05-18_15 08 06](https://user-images.githubusercontent.com/33841634/118716809-de048300-b7ea-11eb-8022-8f65cd71a55c.png)
+
 The `PathAcc()` function determines the minimum acceleration of a linear motion profile given the time, distance, initial & final velocities, and velocity limits.
+
+![2021-05-18_15 08 47](https://user-images.githubusercontent.com/33841634/118716876-f5dc0700-b7ea-11eb-8505-a900ce2f5810.png)
 
 Provided a velocity point profile, the `PathPoint()` function will return the position, velocity, and acceleration at an intermediate time value.
 
+![2021-05-18_15 10 21](https://user-images.githubusercontent.com/33841634/118717067-2e7be080-b7eb-11eb-86ff-90735e557f76.png)
+
 `PathAccInTimeDiffWithRise` finds the acceleration for two profiles to traverse a distance with a specified difference in time durations.
 
+![2021-05-18_15 17 41](https://user-images.githubusercontent.com/33841634/118717859-36885000-b7ec-11eb-9d88-324cf8796e31.png)
+
+![2021-05-18_15 17 44](https://user-images.githubusercontent.com/33841634/118717875-3a1bd700-b7ec-11eb-8724-980e5d953152.png)
