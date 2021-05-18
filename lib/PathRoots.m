@@ -9,15 +9,15 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResults = false)
 	solution.r_1 = 0.0; solution.r_2 = 0.0;
 	
 	% Compute the discriminant
-	Discriminant = p_1 ^ 2 - 4.0 * p_2 * p_0; % b^2 - 4ac
+	discriminant = p_1 ^ 2 - 4.0 * p_2 * p_0; % b^2 - 4ac
 	
 	% Two roots
 	if p_2 != 0.0 % Protect against divide-by-zero
-		if Discriminant > 0.0 % Two real roots
-			solution.r_1 = ((-p_1) + sqrt(Discriminant)) / (2.0 * p_2); 
-			solution.r_2 = ((-p_1) - sqrt(Discriminant)) / (2.0 * p_2);
+		if discriminant > 0.0 % Two real roots
+			solution.r_1 = ((-p_1) + sqrt(discriminant)) / (2.0 * p_2); 
+			solution.r_2 = ((-p_1) - sqrt(discriminant)) / (2.0 * p_2);
 			
-		elseif Discriminant < 0.0 % Imaginary roots
+		elseif discriminant < 0.0 % Imaginary roots
 			printf("PathRoots call warning: solution has imaginary roots\n");
 			valid = false;
 			return;
@@ -26,7 +26,7 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResults = false)
 			solution.r_1 = (-p_1) / (2.0 * p_2);
 			solution.r_2 = solution.r_1;
 			
-		end % discriminant
+		end % Discriminant
 	
 	else % First order
 		if p_1 != 0 % Single root

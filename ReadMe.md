@@ -28,7 +28,7 @@ List of functions:
 	- `v = PathVel(dt, dx, v_0, v_f, v_min, v_max, a)`
 	- Determine the minimum intermediate velocity to move with acceleration in time over a distance.
 - PathTimeDiff
-	- `tdiff = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a)`
+	- `dt_tilde = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a)`
 	- Determine the difference between the time minimizing and time maximizing velocity profiles.
 - PathAccInTimeDiff
 	- `a = PathAccInTimeDiff(dt_tilde, dx, v_0, v_f, v_min, v_max)`
@@ -37,7 +37,7 @@ List of functions:
 	- `a = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max)`
 	- Same as `PathAccInTimeDiff`, but also consider an initial rise in velocity from standstill.
 - PathRoots
-	- `r1, r2 = PathRoots(p_2, p_1, p_0)`
+	- `r_1, r_2 = PathRoots(p_2, p_1, p_0)`
 	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p_2 * x^2 + p_1 * x + p_0 = 0`.
 - PathPoint
 	- `x, v, a = PathPoint(x0, t_[i], v_[i], n, t)`
