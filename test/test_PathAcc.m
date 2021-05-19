@@ -21,5 +21,5 @@ end
 
 for i = 1:length(In) %36
 	printf("%d: ", i-1);
-	[Solution, Valid] = GetAcc(In{i}.dt, In{i}.dx, In{i}.v0, In{i}.vf, In{i}.vmin, In{i}.vmax, true);
+	[Solution, Valid] = PathAcc(In{i}.dt, In{i}.dx, In{i}.v0, In{i}.vf, In{i}.vmin, In{i}.vmax, true);
 end
