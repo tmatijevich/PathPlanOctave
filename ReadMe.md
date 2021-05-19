@@ -16,43 +16,40 @@ This library assumes:
 
 List of functions:
 - PathAcc
-	- `a = GetAcc(dt, dx, v0, vf, vmin, vmax)`
+	- `a = PathAcc(dt, dx, v_0, v_f, v_min, v_max)`
 	- Determine the minimum acceleration to move in time over a distance.
 - PathTime
-	- `dt = GetTimeDur(dx, v0, vf, vmin, vmax, a)`
+	- `dt = PathTime(dx, v_0, v_f, v_min, v_max, a)`
 	- Determine the minimum time to move with acceleration over a distance.
 - PathDist
-	- `dx = GetDist(dt, v0, vf, vmin, vmax, a)`
+	- `dx = PathDist(dt, v_0, v_f, v_min, v_max, a)`
 	- Determine the maximum distance to move with acceleration in time.
 - PathVel
-	- `v = GetVel(dt, dx, v0, vf, vmin, vmax, a)`
+	- `v = PathVel(dt, dx, v_0, v_f, v_min, v_max, a)`
 	- Determine the minimum intermediate velocity to move with acceleration in time over a distance.
 - PathTimeDiff
-	- `tdiff = GetTimeDiff(dx, v0, vf, vmin, vmax, a)`
+	- `tdiff = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a)`
 	- Determine the difference between the time minimizing and time maximizing velocity profiles.
 - PathAccInTimeDiff
-	- `a = GetAccInTimeDiff(tdiff, dx, v0, vf, vmin, vmax)`
+	- `a = PathAccInTimeDiff(dt_tilde, dx, v_0, v_f, v_min, v_max)`
 	- Determine the minimum acceleration required to achieve movement extremes within a given time difference.
 - PathAccInTimeDiffWithRise
-	- `a = GetAccInTimeDiffWithRise(dt_tilda, dx, v_1, v_f, v_min, v_max)`
-	- Same as `GetAccInTimeDiff`, but also consider an initial rise in velocity from standstill.
-- PathRoot
-	- `r1, r2 = SecondOrderRoot(p2, p1, p0)`
-	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p2 * x^2 + p1 * x + p0 = 0`.
+	- `a = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max)`
+	- Same as `PathAccInTimeDiff`, but also consider an initial rise in velocity from standstill.
+- PathRoots
+	- `r1, r2 = PathRoots(p_2, p_1, p_0)`
+	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p_2 * x^2 + p_1 * x + p_0 = 0`.
 - PathPoint
-	- `x, v, a = GetProfilePt(x0, t[i], v[i], n, t*)`
+	- `x, v, a = PathPoint(x0, t_[i], v_[i], n, t)`
 	- Determine the position, velocity, and acceleration at a time point along a velocity point profile.
 	
 ## Sample Plots
 
-This library typically describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, as well as an intermediate velocity possibly saturated by the limits.
+This library describes movement profiles in terms of velocity and time, where position and acceleration can be differentiated and integrated. The velocity profile has an initial and final velocity, plus an intermediate velocity saturated by the limits.
 
-![Sample profile](media/VelocityProfile.png)
+The `PathAcc()` function determines the minimum acceleration of a linear motion profile given the time, distance, initial & final velocities, and velocity limits.
 
-Here is a sample for the `GetAcc()` function where the acceleration of a linear motion profile is determined given the time, distance, initial & final velocities, and velocity limits.
+Provided a velocity point profile, the `PathPoint()` function will return the position, velocity, and acceleration at an intermediate time value.
 
-![GetAcc sample](media/GetAccSample.png)
+`PathAccInTimeDiffWithRise` finds the acceleration for two profiles to traverse a distance with a specified difference in time durations.
 
-Provided a velocity point profile, the `GetPoint()` function will return the position, velocity, and acceleration at an intermediate time value.
-
-![GetPoint sample](media/GetPointSample.png)

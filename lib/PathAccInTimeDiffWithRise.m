@@ -28,6 +28,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 	solution.decAcc.v 		= [0.0, 0.0, 0.0, 0.0, 0.0];
 	solution.decAcc.a 		= 0.0;
 	solution.decAcc.move 	= PATH_MOVE_NONE;
+	solution.case 			= 0;
 	
 	% Input requirements
 	% #1: Plausible velocity limits
@@ -109,7 +110,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 		
 		solution.accDec.a = (c_dtD - c_dtA - (c_dxD - c_dxA)) / (dt_tilde - dx * (1.0 / v_min - 1.0 / v_max));
 		solution.decAcc.a = solution.accDec.a;
-		solutionCase = 1;
+		solution.case = 1;
 		
 	% 2. Time difference below v_max saturation limit
 	elseif (dt_tilde < dt_u_tilde) && (dt_tilde >= dt_l_tilde)
@@ -124,7 +125,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 		p_1 = - 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
 		requires2ndOrderSolution = true;
-		solutionCase = 2;
+		solution.case = 2;
 		
 	% 3. Time difference below v_min saturation limit
 	elseif (dt_tilde >= dt_u_tilde) && (dt_tilde < dt_l_tilde)
@@ -139,7 +140,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 		p_1 = 4.0 * dx - 2.0 * c_2 * c_3;
 		p_0 = c_2 ^ 2 - 4.0 * c_1;
 		requires2ndOrderSolution = true;
-		solutionCase = 3;
+		solution.case = 3;
 		
 	% 4. Time difference below both saturation limits
 	else
@@ -156,7 +157,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 			solution.accDec.a = a_l;
 			solution.decAcc.a = a_l;
 		end
-		solutionCase = 4;
+		solution.case = 4;
 	end % dt_tilde cases
 	
 	if requires2ndOrderSolution
@@ -225,7 +226,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 	valid = true;
 	
 	if printResult
-		printf("PathAccInTimeDiffWithRise call: a = %.3f, Case %d, Moves %d, %d\n", solution.accDec.a, solutionCase, solution.accDec.move, solution.decAcc.move);
+		printf("PathAccInTimeDiffWithRise call: a = %.3f, Case %d, Moves %d, %d\n", solution.accDec.a, solution.case, solution.accDec.move, solution.decAcc.move);
 	end
 	
 end % Function

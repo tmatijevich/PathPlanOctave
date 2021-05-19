@@ -8,7 +8,7 @@ vf 		= 1.2;
 vmin 	= 0.75;
 vmax 	= 3.0;
 
-[Solution, Valid] = GetAcc(dt, dx, v0, vf, vmin, vmax);
+[Solution, Valid] = PathAcc(dt, dx, v0, vf, vmin, vmax);
 
 textSize = 13;
 

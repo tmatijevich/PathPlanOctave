@@ -1,6 +1,6 @@
 %!octave
 
-% GetAcc() sample
+% PathAcc() sample
 
 % Set velocities
 v0 		= 1.9;
@@ -9,7 +9,7 @@ vmin 	= 0.75;
 vmax 	= 3.0;
 
 % Create the figure
-hFig = figure(1, "name", "GetAcc() Sample"); set(hFig, "menubar", "none");
+hFig = figure(1, "name", "PathAcc() Sample"); set(hFig, "menubar", "none");
 CurrentPosition = get(gcf, "position");
 set(gcf, "position", [CurrentPosition(1:2) 830 720]);
 textSize = 13;
@@ -26,7 +26,7 @@ cv = cell(n,1);
 a_ = zeros(n,1);
 
 for i = 1:n
-	[Solution, Valid] = GetAcc(dt, dx_(i), v0, vf, vmin, vmax, true);
+	[Solution, Valid] = PathAcc(dt, dx_(i), v0, vf, vmin, vmax, true);
 	if Valid
 		ct{i} = Solution.t;
 		cv{i} = Solution.v;
@@ -38,7 +38,7 @@ end
 subplot(3,2,1);
 cla;
 hold on;
-title("GetAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
+title("PathAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
 for i = 1:n
 	zplt = dx_(i) .* ones(1, length(ct{i}));
 	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.5);
@@ -57,7 +57,7 @@ ylabel("Velocity [m/s]", "fontsize", textSize);
 subplot(3,2,3);
 cla;
 hold on;
-title("GetAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
+title("PathAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
 for i = 1:n
 	zplt = a_(i) .* ones(1, length(ct{i}));
 	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.5);
@@ -75,7 +75,7 @@ ylabel("Velocity [m/s]", "fontsize", textSize);
 subplot(3,2,5);
 cla;
 hold on;
-title("GetAcc() vs Distance", "fontsize", textSize);
+title("PathAcc() vs Distance", "fontsize", textSize);
 NominalDistance = 0.5 * (v0 + vf) * dt;
 plot([NominalDistance, NominalDistance], [0, 50], "k--");
 plot(dx_, a_, "r.", "markersize", 12);
@@ -102,7 +102,7 @@ cv = cell(n,1);
 a_ = zeros(n,1);
 
 for i = 1:n
-	[Solution, Valid] = GetAcc(dt_(i), dx, v0, vf, vmin, vmax, true);
+	[Solution, Valid] = PathAcc(dt_(i), dx, v0, vf, vmin, vmax, true);
 	if Valid
 		ct{i} = Solution.t;
 		cv{i} = Solution.v;
@@ -114,7 +114,7 @@ end
 subplot(3,2,2);
 cla;
 hold on;
-title("GetAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
+title("PathAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
 for i = 1:n
 	zplt = dt_(i) .* ones(1, length(ct{i}));
 	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.2);
@@ -133,7 +133,7 @@ ylabel("Velocity [m/s]", "fontsize", textSize);
 subplot(3,2,4);
 cla;
 hold on;
-title("GetAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
+title("PathAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
 for i = 1:n
 	zplt = a_(i) .* ones(1, length(ct{i}));
 	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.2);
@@ -151,7 +151,7 @@ ylabel("Velocity [m/s]", "fontsize", textSize);
 subplot(3,2,6);
 cla;
 hold on;
-title("GetAcc() vs Time Duration", "fontsize", textSize);
+title("PathAcc() vs Time Duration", "fontsize", textSize);
 NominalTime = (2.0 * dx * abs(v0 - vf)) / (abs(v0 ^ 2 - vf ^ 2));
 plot([NominalTime, NominalTime], [0, 50], "k--");
 plot(dt_, a_, "b.", "markersize", 12);
