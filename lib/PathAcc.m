@@ -109,10 +109,10 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 	end % dx_bar?
 	
 	if (solution.move == PATH_ACC_DEC_PEAK) || (solution.move == PATH_DEC_ACC_PEAK)
-		p2 = 2.0 * dt;
-		p1 = -4.0 * dx;
-		p0 = 2.0 * dx * (v_0 + v_f) - dt * (v_0 ^ 2 + v_f ^ 2);
-		[rootsSolution, rootsValid] = SecondOrderRoots(p2, p1, p0);
+		p_2 = 2.0 * dt;
+		p_1 = -4.0 * dx;
+		p_0 = 2.0 * dx * (v_0 + v_f) - dt * (v_0 ^ 2 + v_f ^ 2);
+		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 		
 		if !rootsValid
 			printf("PathAcc call failed: Invalid roots for peak movement\n");
@@ -121,11 +121,11 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 			
 		else % Roots are valid
 			if solution.move == PATH_ACC_DEC_PEAK % Vmax
-				solution.v(2) = max(rootsSolution.r1, rootsSolution.r2);
+				solution.v(2) = max(rootsSolution.r_1, rootsSolution.r_2);
 				solution.v(3) = solution.v(2);
 				
 			else % Vmin
-				solution.v(2) = min(rootsSolution.r1, rootsSolution.r2);
+				solution.v(2) = min(rootsSolution.r_1, rootsSolution.r_2);
 				solution.v(3) = solution.v(2);
 				
 			end

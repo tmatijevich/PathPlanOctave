@@ -161,7 +161,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 	end % dt_tilde cases
 	
 	if requires2ndOrderSolution
-		[rootsSolution, rootsValid] = SecondOrderRoots(p_2, p_1, p_0);
+		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 		
 		if !rootsValid
 			printf("PathAccInTimeDiffWithRise call failed: Invalid roots for peak movement\n");
@@ -169,8 +169,8 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 			return;
 			
 		else
-			if max(rootsSolution.r1, rootsSolution.r2) > 0.0 
-				solution.accDec.a = max(rootsSolution.r1, rootsSolution.r2);
+			if max(rootsSolution.r_1, rootsSolution.r_2) > 0.0 
+				solution.accDec.a = max(rootsSolution.r_1, rootsSolution.r_2);
 				solution.decAcc.a = solution.accDec.a;
 			else
 				printf("PathAccInTimeDiffWithRise call failed: Non-position 2nd order roots solution\n");
