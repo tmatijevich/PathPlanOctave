@@ -1,24 +1,25 @@
-# GetAcc Function
-
-## `a = GetAcc(dt, dx, v0, vf, vmin, vmax)`
+# PathAcc Function
 
 *Determine the minimum acceleration to change velocity in time over a distance.*
+
+## `a = PathAcc(dt, dx, v_0, v_f, v_min, v_max)`
+
 
 ## Inputs
 
 - `dt` Time duration
 - `dx` Distance
-- `v0` Initial velocity
-- `vf` Final velocity
-- `vmin` Minimum velocity
-- `vmax` Maximum velocity
+- `v_0` Initial velocity
+- `v_f` Final velocity
+- `v_min` Minimum velocity
+- `v_max` Maximum velocity
 
 ## Input Conditions
 
 1. $\quad 0 \leq v_{min} < v_{max}$
 2. $\quad v_{min} \leq v_0 \leq v_{max} \;,\; v_{min} \leq v_f \leq v_{max}$
 3. $\quad \delta t \;,\; \delta x > 0$
-4. $\quad v_{min} \, \delta t < \delta x < v_{max} \, \delta t$
+4. $\quad v_{min} \cdot \delta t < \delta x < v_{max} \cdot \delta t$
 
 ## Derivation
 
@@ -30,31 +31,31 @@ $$
 \bar{x} = \frac{1}{2} \delta t (v_0 + v_f)
 $$
 
-Given the time duration, determine the acceleration $a_{s.l.max}$ at the saturation limit of the velocity maximizing profile. 
+Given the time duration, determine the acceleration $a_u$ at the saturation limit of the velocity maximizing profile. 
 
 - This is a two-segment velocity profile with symmetric acceleration magnitudes.
 - $v_{max} \geq v_0, v_f$ from the input conditions.
 
 $$
-a_{s.l.max} = \frac{2 v_{max} - v_0 - v_f}{\delta t}
+a_u = \frac{2 v_{max} - v_0 - v_f}{\delta t}
 $$
 
 Now determine the distance at the saturation limit of the velocity maximizing profile. 
 
 $$
-{\delta x}_{s.l.max} = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a_{s.l.max}}
+{\delta x}_u = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a_u}
 $$
 
 Re-written in terms of all inputs.
 
 $$
-{\delta x}_{s.l.max} = \frac{(2 v_{max}^2 - v_0^2 - v_f^2) \delta t}{2 v_{max} - v_0 - v_f}
+{\delta x}_u = \frac{(2 v_{max}^2 - v_0^2 - v_f^2) \delta t}{2 v_{max} - v_0 - v_f}
 $$
 
 The same approach can be completed for the velocity minimizing profile.
 
 $$
-{\delta x}_{s.l.min} = \frac{(v_0^2 + v_f^2 - 2 v_{min}^2) \delta t}{v_0 + v_f - 2 v_{min}}
+{\delta x}_l = \frac{(v_0^2 + v_f^2 - 2 v_{min}^2) \delta t}{v_0 + v_f - 2 v_{min}}
 $$
 
 The solution of the acceleration magnitude now comes down to four cases.
@@ -62,9 +63,9 @@ The solution of the acceleration magnitude now comes down to four cases.
 Case | Condition
 -----|----------
 `PATH_ACC_DEC_SATURATED` | $\bar{\delta x} \leq \delta x _u \leq \delta x$
-`PATH_ACC_DEC_PEAK` | $\delta x \geq \bar{x} \;,\; \delta x < {\delta x}_{s.l.max}$
-`PATH_DEC_ACC_PEAK` | $\delta x < \bar{x} \;,\; \delta x > {\delta x}_{s.l.min}$
-`PATH_DEC_ACC_SATURATED` | $\delta x < \bar{x} \;,\; \delta x \leq {\delta x}_{s.l.min}$
+`PATH_ACC_DEC_PEAK` | $\bar{\delta x} \leq \delta x < \delta x_u$
+`PATH_DEC_ACC_PEAK` | $\delta x_l < \delta x < \bar{\delta x}$
+`PATH_DEC_ACC_SATURATED` | $\delta x \leq \delta x_l < \bar{\delta x}$
 
 1. The profile is saturated at $v_{max}$ for some time, $t_{12}$.
 

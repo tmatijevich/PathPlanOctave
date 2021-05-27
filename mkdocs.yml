@@ -3,10 +3,10 @@ site_dir: ..\PathPlanDocsRelease
 theme:
   name: material
 nav:
-  - 'Introduction.md'
-  - 'Common.md'
-  - 'Variables.md'
-  - 'GetAcc.md'
+  - '0_Introduction.md'
+  - '1_CommonEquations.md'
+  - '2_Variables.md'
+  - '3_PathAcc.md'
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
