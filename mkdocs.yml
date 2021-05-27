@@ -5,6 +5,7 @@ theme:
 nav:
   - 'Introduction.md'
   - 'Common.md'
+  - 'Variables.md'
   - 'GetAcc.md'
 markdown_extensions:
   - pymdownx.arithmatex:

@@ -61,7 +61,7 @@ The solution of the acceleration magnitude now comes down to four cases.
 
 Case | Condition
 -----|----------
-`PATH_ACC_DEC_SATURATED` | $\delta x \geq \bar{x} \;,\; \delta x \geq {\delta x}_{s.l.max}$
+`PATH_ACC_DEC_SATURATED` | $\bar{\delta x} \leq \delta x _u \leq \delta x$
 `PATH_ACC_DEC_PEAK` | $\delta x \geq \bar{x} \;,\; \delta x < {\delta x}_{s.l.max}$
 `PATH_DEC_ACC_PEAK` | $\delta x < \bar{x} \;,\; \delta x > {\delta x}_{s.l.min}$
 `PATH_DEC_ACC_SATURATED` | $\delta x < \bar{x} \;,\; \delta x \leq {\delta x}_{s.l.min}$
