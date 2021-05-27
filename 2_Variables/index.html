@@ -14,7 +14,7 @@
     
     
       
-        <title>Common Equations - My Docs</title>
+        <title>Variables - My Docs</title>
       
     
     
@@ -61,7 +61,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#common-equations" class="md-skip">
+        <a href="#variables" class="md-skip">
           Skip to content
         </a>
       
@@ -91,7 +91,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Common Equations
+              Variables
             
           </span>
         </div>
@@ -171,8 +171,23 @@
   
   
     <li class="md-nav__item">
-      <a href="../Introduction/" class="md-nav__link">
+      <a href="../0_Introduction/" class="md-nav__link">
         Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_CommonEquations/" class="md-nav__link">
+        Common Equations
       </a>
     </li>
   
@@ -195,12 +210,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Common Equations
+          Variables
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Common Equations
+        Variables
       </a>
       
         
@@ -217,15 +232,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#time-distance" class="md-nav__link">
-    Time &amp; Distance
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#derivation" class="md-nav__link">
-    Derivation
+  <a href="#list-of-all-variables" class="md-nav__link">
+    List of all Variables
   </a>
   
 </li>
@@ -246,8 +254,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../GetAcc/" class="md-nav__link">
-        GetAcc Function
+      <a href="../3_PathAcc/" class="md-nav__link">
+        PathAcc Function
       </a>
     </li>
   
@@ -278,15 +286,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#time-distance" class="md-nav__link">
-    Time &amp; Distance
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#derivation" class="md-nav__link">
-    Derivation
+  <a href="#list-of-all-variables" class="md-nav__link">
+    List of all Variables
   </a>
   
 </li>
@@ -304,30 +305,94 @@
               
                 
                 
-                <h1 id="common-equations">Common Equations</h1>
-<h2 id="time-distance">Time &amp; Distance</h2>
-<p>Nearly every function in this library is derived from the equation defining time and/or distance of a velocity profile segment.</p>
-<ul>
-<li>The <em>time duration</em> <span class="arithmatex">\(\delta t\)</span> of a velocity segment is simply:</li>
-</ul>
-<div class="arithmatex">\[
-\delta t = \frac{|v_0 - v_f|}{a}
-\]</div>
-<ul>
-<li>The <em>distance</em> <span class="arithmatex">\(\delta x\)</span> is:</li>
-</ul>
-<div class="arithmatex">\[
-\delta x = \frac{|v_0^2 - v_f^2|}{2a}
-\]</div>
-<ul>
-<li>This octave plot depicts the variables. </li>
-</ul>
-<p><img alt="Profile segment plot" class="image-center" src="../media/VelocitySegment.png" /></p>
-<div class="admonition note">
-<p class="admonition-title">PathPlan: <span class="arithmatex">\(a &gt; 0\)</span></p>
-<p>In this library's implementation, <em>acceleration</em> <span class="arithmatex">\(a\)</span> is defined as positive representing the magnitude of acceleration or deceleration of a velocity profile segment. (Therefore a single acceleration magnitude for a multi-segment velocity profile with symmetric acceleration/deceleration.)</p>
-</div>
-<h2 id="derivation">Derivation</h2>
+                <h1 id="variables">Variables</h1>
+<h2 id="list-of-all-variables">List of all Variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\delta t\)</span></td>
+<td>(Total) time duration (<span class="arithmatex">\(t_f - t_0\)</span>)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta x\)</span></td>
+<td>(Total) distance (<span class="arithmatex">\(x_f - x_0\)</span>)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(v_0\)</span></td>
+<td>Initial speed</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(v_f\)</span></td>
+<td>Final speed</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(a\)</span></td>
+<td>Acceleration magnitude</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\tilde{\delta t}\)</span></td>
+<td>Difference in time durations</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(v_p\)</span></td>
+<td>Peak velocity (or dip/minimum)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\bar{\delta x}\)</span></td>
+<td>Nominal distance (single acceleration phase)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\bar{\delta t}\)</span></td>
+<td>Nominal time duration (single acceleration phase)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta x_u\)</span></td>
+<td>Distance at the velocity profile maximum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta x_l\)</span></td>
+<td>Distance at the velocity profile minimum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(a_u\)</span></td>
+<td>Acceleration at the velocity profile maximum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(a_l\)</span></td>
+<td>Acceleration at the velocity profile minimum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta t_u\)</span></td>
+<td>Time duration at the velocity profile maximum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\delta t_l\)</span></td>
+<td>Time duration at the velocity profile minimum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\hat{\delta t_u}\)</span></td>
+<td>Time duration of the <code>DEC_ACC</code> profile at the velocity maximum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\hat{\delta t_l}\)</span></td>
+<td>Time duration of the <code>ACC_DEC</code> profile at the velocity minimum saturation limit</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\tilde{\delta t_u}\)</span></td>
+<td>Time difference at the velocity profile maximum saturation limit (<span class="arithmatex">\(\hat{\delta t_u} - \delta t_u\)</span>)</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\tilde{\delta t_l}\)</span></td>
+<td>Time difference at the velocity profile minimum saturation limit (<span class="arithmatex">\(\delta t_l - \hat{\delta t_l}\)</span>)</td>
+</tr>
+</tbody>
+</table>
                 
               
               
@@ -346,7 +411,7 @@
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href="../Introduction/" class="md-footer__link md-footer__link--prev" rel="prev">
+        <a href="../1_CommonEquations/" class="md-footer__link md-footer__link--prev" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -355,19 +420,19 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Introduction
+              Common Equations
             </div>
           </div>
         </a>
       
       
-        <a href="../GetAcc/" class="md-footer__link md-footer__link--next" rel="next">
+        <a href="../3_PathAcc/" class="md-footer__link md-footer__link--next" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              GetAcc Function
+              PathAcc Function
             </div>
           </div>
           <div class="md-footer__button md-icon">

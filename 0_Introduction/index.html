@@ -14,7 +14,7 @@
     
     
       
-        <title>GetAcc Function - My Docs</title>
+        <title>Introduction - My Docs</title>
       
     
     
@@ -61,7 +61,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getacc-function" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -91,7 +91,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              GetAcc Function
+              Introduction
             
           </span>
         </div>
@@ -169,36 +169,6 @@
 
   
   
-  
-    <li class="md-nav__item">
-      <a href="../Introduction/" class="md-nav__link">
-        Introduction
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../Common/" class="md-nav__link">
-        Common Equations
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
     
   
   
@@ -210,12 +180,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          GetAcc Function
+          Introduction
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        GetAcc Function
+        Introduction
       </a>
       
         
@@ -232,30 +202,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#a-getaccdt-dx-v0-vf-vmin-vmax" class="md-nav__link">
-    a = GetAcc(dt, dx, v0, vf, vmin, vmax)
+  <a href="#pathplan" class="md-nav__link">
+    PathPlan
+  </a>
+  
+    <nav class="md-nav" aria-label="PathPlan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-of-functions" class="md-nav__link">
+    List of Functions
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    Inputs
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    Implementation
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#input-conditions" class="md-nav__link">
-    Input Conditions
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#derivation" class="md-nav__link">
-    Derivation
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -263,6 +232,51 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../1_CommonEquations/" class="md-nav__link">
+        Common Equations
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2_Variables/" class="md-nav__link">
+        Variables
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../3_PathAcc/" class="md-nav__link">
+        PathAcc Function
+      </a>
     </li>
   
 
@@ -292,30 +306,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#a-getaccdt-dx-v0-vf-vmin-vmax" class="md-nav__link">
-    a = GetAcc(dt, dx, v0, vf, vmin, vmax)
+  <a href="#pathplan" class="md-nav__link">
+    PathPlan
+  </a>
+  
+    <nav class="md-nav" aria-label="PathPlan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-of-functions" class="md-nav__link">
+    List of Functions
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#inputs" class="md-nav__link">
-    Inputs
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    Implementation
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#input-conditions" class="md-nav__link">
-    Input Conditions
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#derivation" class="md-nav__link">
-    Derivation
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -332,116 +345,26 @@
               
                 
                 
-                <h1 id="getacc-function">GetAcc Function</h1>
-<h2 id="a-getaccdt-dx-v0-vf-vmin-vmax"><code>a = GetAcc(dt, dx, v0, vf, vmin, vmax)</code></h2>
-<p><em>Determine the minimum acceleration to change velocity in time over a distance.</em></p>
-<h2 id="inputs">Inputs</h2>
+                <h1 id="introduction">Introduction</h1>
+<h2 id="pathplan">PathPlan</h2>
+<p>PathPlan(Octave) is a library of one-dimensional kinematic functions aimed to solve path planning decisions for point-to-point movements. The paths are designed with constant acceleration segments. For specific inputs, each function can provide a full path profile.</p>
+<h3 id="list-of-functions">List of Functions</h3>
 <ul>
-<li><code>dt</code> Time duration</li>
-<li><code>dx</code> Distance</li>
-<li><code>v0</code> Initial velocity</li>
-<li><code>vf</code> Final velocity</li>
-<li><code>vmin</code> Minimum velocity</li>
-<li><code>vmax</code> Maximum velocity</li>
+<li><code>PathAcc</code></li>
+<li><code>PathTime</code></li>
+<li><code>PathDist</code></li>
+<li><code>PathVel</code></li>
+<li><code>PathTimeDiff</code></li>
+<li><code>PathAccInTimeDiff</code></li>
+<li><code>PathAccInTimeDiffWithRise</code></li>
+<li><code>PathRoots</code></li>
+<li><code>PathPoint</code></li>
 </ul>
-<h2 id="input-conditions">Input Conditions</h2>
-<ol>
-<li><span class="arithmatex">\(\quad 0 \leq v_{min} &lt; v_{max}\)</span></li>
-<li><span class="arithmatex">\(\quad v_{min} \leq v_0 \leq v_{max} \;,\; v_{min} \leq v_f \leq v_{max}\)</span></li>
-<li><span class="arithmatex">\(\quad \delta t \;,\; \delta x &gt; 0\)</span></li>
-<li><span class="arithmatex">\(\quad v_{min} \, \delta t &lt; \delta x &lt; v_{max} \, \delta t\)</span></li>
-</ol>
-<h2 id="derivation">Derivation</h2>
-<p>Define a nominal distance, <span class="arithmatex">\(\bar{x}\)</span>. </p>
+<h3 id="implementation">Implementation</h3>
 <ul>
-<li>This is the distance if the acceleration magnitude matches the exact time to change velocity from <span class="arithmatex">\(v_0\)</span> to <span class="arithmatex">\(v_f\)</span>.</li>
+<li><a href="https://github.com/tmatijevich/LibPathPlanOctave#readme">Octave (PathPlanOctave)</a></li>
+<li><a href="https://github.com/tmatijevich/LibPathPlan">Automation Runtime (PathPlan)</a></li>
 </ul>
-<div class="arithmatex">\[
-\bar{x} = \frac{1}{2} \delta t (v_0 + v_f)
-\]</div>
-<p>Given the time duration, determine the acceleration <span class="arithmatex">\(a_{s.l.max}\)</span> at the saturation limit of the velocity maximizing profile. </p>
-<ul>
-<li>This is a two-segment velocity profile with symmetric acceleration magnitudes.</li>
-<li><span class="arithmatex">\(v_{max} \geq v_0, v_f\)</span> from the input conditions.</li>
-</ul>
-<div class="arithmatex">\[
-a_{s.l.max} = \frac{2 v_{max} - v_0 - v_f}{\delta t}
-\]</div>
-<p>Now determine the distance at the saturation limit of the velocity maximizing profile. </p>
-<div class="arithmatex">\[
-{\delta x}_{s.l.max} = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a_{s.l.max}}
-\]</div>
-<p>Re-written in terms of all inputs.</p>
-<div class="arithmatex">\[
-{\delta x}_{s.l.max} = \frac{(2 v_{max}^2 - v_0^2 - v_f^2) \delta t}{2 v_{max} - v_0 - v_f}
-\]</div>
-<p>The same approach can be completed for the velocity minimizing profile.</p>
-<div class="arithmatex">\[
-{\delta x}_{s.l.min} = \frac{(v_0^2 + v_f^2 - 2 v_{min}^2) \delta t}{v_0 + v_f - 2 v_{min}}
-\]</div>
-<p>The solution of the acceleration magnitude now comes down to four cases.</p>
-<table>
-<thead>
-<tr>
-<th>Case</th>
-<th>Condition</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>PATH_ACC_DEC_SATURATED</code></td>
-<td><span class="arithmatex">\(\delta x \geq \bar{x} \;,\; \delta x \geq {\delta x}_{s.l.max}\)</span></td>
-</tr>
-<tr>
-<td><code>PATH_ACC_DEC_PEAK</code></td>
-<td><span class="arithmatex">\(\delta x \geq \bar{x} \;,\; \delta x &lt; {\delta x}_{s.l.max}\)</span></td>
-</tr>
-<tr>
-<td><code>PATH_DEC_ACC_PEAK</code></td>
-<td><span class="arithmatex">\(\delta x &lt; \bar{x} \;,\; \delta x &gt; {\delta x}_{s.l.min}\)</span></td>
-</tr>
-<tr>
-<td><code>PATH_DEC_ACC_SATURATED</code></td>
-<td><span class="arithmatex">\(\delta x &lt; \bar{x} \;,\; \delta x \leq {\delta x}_{s.l.min}\)</span></td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li>
-<p>The profile is saturated at <span class="arithmatex">\(v_{max}\)</span> for some time, <span class="arithmatex">\(t_{12}\)</span>.</p>
-<div class="arithmatex">\[
-\delta t = \frac{2 v_{max} - v_0 - v_f}{a} + t_{12} \quad \delta x = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a} + t_{12} v_{max}
-\]</div>
-<ul>
-<li>Reduce the equations by eliminating <span class="arithmatex">\(t_{12}\)</span>.</li>
-</ul>
-<div class="arithmatex">\[
-\delta x = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 a} + (\delta t - \frac{2 v_{max} - v_0 - v_f}{a}) v_{max}
-\]</div>
-<ul>
-<li>Solve for <span class="arithmatex">\(a\)</span>.</li>
-</ul>
-<div class="arithmatex">\[
-a = \frac{2 v_{max}^2 - v_0^2 - v_f^2}{2 (\delta x - \delta t \, v_{max})} - \frac{2 v_{max} - v_0 - v_f}{\delta x - \delta t \, v_{max}}
-\]</div>
-</li>
-<li>
-<p>The profile is unsaturated with a peak velocity, <code>PATH_ACC_DEC_SATURATED</code>.</p>
-<div class="arithmatex">\[
-\delta t = \frac{2 v_{peak} - v_0 - v_f}{a} \quad \delta x = \frac{2 v_{peak}^2 - v_0 ^ 2 - v_f^2}{2 \, a}
-\]</div>
-<div class="arithmatex">\[
-2 \delta x \frac{2 v_{peak} - v_0 - v_f}{\delta t} = 2 v_{peak}^2 - v_0^2 - v_f^2
-\]</div>
-<div class="arithmatex">\[
-0 = \underbrace{2 \delta t}_{p_2} v_{peak}^2 + \underbrace{(-4 \delta x)}_{p_1} v_{peak} + \underbrace{2 \delta x (v_0 + v_f) - \delta t (v_0^2 + v_f^2)}_{p_0}
-\]</div>
-<p>Use the second order roots solution for <span class="arithmatex">\(v_{peak}\)</span>, then solve for <span class="arithmatex">\(a\)</span>.</p>
-<div class="arithmatex">\[
-a = \frac{2 v_{peak} - v_0 - v_f}{\delta t}
-\]</div>
-</li>
-</ol>
                 
               
               
@@ -460,20 +383,20 @@ a = \frac{2 v_{peak} - v_0 - v_f}{\delta t}
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href="../Common/" class="md-footer__link md-footer__link--prev" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-          </div>
+      
+        <a href="../1_CommonEquations/" class="md-footer__link md-footer__link--next" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
-                Previous
+                Next
               </span>
               Common Equations
             </div>
           </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
         </a>
-      
       
     </nav>
   
