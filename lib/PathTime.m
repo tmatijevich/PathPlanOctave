@@ -89,7 +89,7 @@ function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult
 	valid = true;
 	
 	if printResult
-		printf("PathTime call: Time %1.3f, Vel %1.3f, move %d\n", solution.t(4), solution.v(2), solution.move);
+		printf("PathTime call: Time %1.3f, Vel %1.3f, Move %d\n", solution.t(4), solution.v(2), solution.move);
 	end
 	
 end % Function
