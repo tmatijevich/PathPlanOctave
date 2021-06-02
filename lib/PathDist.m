@@ -37,13 +37,13 @@ function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult
 	
 	% #3: Positive timespan and acceleration
 	elseif (dt <= 0.0) || (a <= 0.0)
-		printf("PathDist call failed: Timespan or acceleration non-positive %1.3f, %1.3f\n", dt, a); 
+		printf("PathDist call failed: Time duration or acceleration non-positive %1.3f, %1.3f\n", dt, a); 
 		valid = false; 
 		return;
 		
 	% #4: Valid timespan given acceleration
 	elseif dt < (abs(v_0 - v_f) / a)
-		printf("PathDist call failed: Impossible timepsan %1.3f given minimum %1.3f\n", dt, abs(v_0 - v_f) / a); 
+		printf("PathDist call failed: Impossible time duration %1.3f given minimum %1.3f\n", dt, abs(v_0 - v_f) / a); 
 		valid = false; 
 		return;
 		

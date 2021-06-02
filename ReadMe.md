@@ -40,7 +40,7 @@ List of functions:
 	- `r_1, r_2 = PathRoots(p_2, p_1, p_0)`
 	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p_2 * x^2 + p_1 * x + p_0 = 0`.
 - PathPoint
-	- `x, v, a = PathPoint(x0, t_[i], v_[i], n, t)`
+	- `x, v, a = PathPoint(x_0, t_[i], v_[i], n, t)`
 	- Determine the position, velocity, and acceleration at a time point along a velocity point profile.
 	
 ## Sample Plots
