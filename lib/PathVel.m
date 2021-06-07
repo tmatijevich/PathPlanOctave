@@ -114,11 +114,18 @@ function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printRes
 	elseif a1Sign == a2Sign % ACC_ACC or DEC_DEC
 		if a1Sign == 1.0
 			solution.move = PATH_ACC_ACC;
-		else
+			solution.v(2) = (dx - dx_bar) / (dt - dt_bar);
+		elseif a1Sign == -1.0
 			solution.move = PATH_DEC_DEC;
+			solution.v(2) = (dx - dx_bar) / (dt - dt_bar);
+		else
+			if v_f > v_0
+				solution.move = PATH_ACC_ACC;
+			else
+				solution.move = PATH_DEC_DEC;
+			end
+			solution.v(2) = v_f;
 		end
-		
-		solution.v(2) = (dx - dx_bar) / (dt - dt_bar);
 		
 	else % DEC_ACC
 		solution.move = PATH_DEC_ACC_SATURATED;
