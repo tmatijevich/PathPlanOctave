@@ -1,6 +1,6 @@
 %!octave
 
-function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult = false)
+function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Determine the differnce between the time minimizing and time maximizing velocity profiles
 	% Assumptions:
 	% 	- Positive distance and velocity
@@ -17,101 +17,101 @@ function [Solution, Valid] = GetTimeDiff(dx, v0, vf, vmin, vmax, a, PrintResult 
 	global PATH_ACC_DEC_SATURATED;
 	
 	% Reset solution
-	Solution.vA = [0.0, 0.0, 0.0, 0.0];
-	Solution.tA = [0.0, 0.0, 0.0, 0.0];
-	Solution.MoveA = PATH_MOVE_NONE;
-	Solution.vB = [0.0, 0.0, 0.0, 0.0];
-	Solution.tB = [0.0, 0.0, 0.0, 0.0];
-	Solution.MoveB = PATH_MOVE_NONE;
-	Solution.tdiff = 0.0;
+	solution.accDec.v = [0.0, 0.0, 0.0, 0.0];
+	solution.accDec.t = [0.0, 0.0, 0.0, 0.0];
+	solution.accDec.move = PATH_MOVE_NONE;
+	solution.decAcc.v = [0.0, 0.0, 0.0, 0.0];
+	solution.decAcc.t = [0.0, 0.0, 0.0, 0.0];
+	solution.decAcc.move = PATH_MOVE_NONE;
+	solution.dt_tilde = 0.0;
 	
 	% Input requirements
 	% #1: Plausible velocity limits
-	if (vmin <= 0.0) || (vmax <= vmin) % *** Requires non-zero vmin (& vmax)
-		printf("GetTimeDiff call failed: Implausible velocity limits %1.3f, %1.3f\n", vmin, vmax); 
-		Valid = false; 
+	if (v_min <= 0.0) || (v_max <= v_min) % *** Requires non-zero v_min (& v_max)
+		printf("PathTimeDiff call failed: Implausible velocity limits %1.3f, %1.3f\n", v_min, v_max); 
+		valid = false; 
 		return;
 	
 	% #2: Endpoint velocities within limits
-	elseif (v0 < vmin) || (v0 > vmax) || (vf < vmin) || (vf > vmax) % *** Thus requires non-zero endpoint velocities
-		printf("GetTimeDiff call failed: Endpoint velocities %1.3f, %1.3f exceed limits %1.3f, %1.3f\n", v0, vf, vmin, vmax); 
-		Valid = false; 
+	elseif (v_0 < v_min) || (v_0 > v_max) || (v_f < v_min) || (v_f > v_max) % *** Thus requires non-zero endpoint velocities
+		printf("PathTimeDiff call failed: Endpoint velocities %1.3f, %1.3f exceed limits %1.3f, %1.3f\n", v_0, v_f, v_min, v_max); 
+		valid = false; 
 		return;
 	
 	% #3: Positive distance and acceleration
 	elseif (dx <= 0.0) || (a <= 0.0)
-		printf("GetTimeDiff call failed: Distance or acceleration non-positive %1.3f, %1.3f\n", dx, a); 
-		Valid = false; 
+		printf("PathTimeDiff call failed: Distance or acceleration non-positive %1.3f, %1.3f\n", dx, a); 
+		valid = false; 
 		return;
 		
 	% #4: Valid distance given acceleration
-	elseif dx < (abs(v0 ^ 2 - vf ^ 2) / (2.0 * a))
-		printf("GetTimeDiff call failed: Implausible distance %1.3f given minimum %1.3f\n", dx, abs(v0 ^ 2 - vf ^ 2) / (2.0 * a)); 
-		Valid = false; 
+	elseif dx < (abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a))
+		printf("PathTimeDiff call failed: Implausible distance %1.3f given minimum %1.3f\n", dx, abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a)); 
+		valid = false; 
 		return;
 		
 	end
 	
 	% Determine the time minimizing profile
-	VmaxDistance = (2.0 * vmax ^ 2 - v0 ^ 2 - vf ^ 2) / (2.0 * a);
-	if dx < VmaxDistance % Acc/dec profile with peak
-		Solution.MoveA = PATH_ACC_DEC_PEAK;
+	dx_u = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
+	if dx < dx_u % Acc/dec profile with peak
+		solution.accDec.move = PATH_ACC_DEC_PEAK;
 		
 		% Determine the peak velocity
-		Solution.vA(2) = sqrt(dx * a + (v0 ^ 2 + vf ^ 2) / 2.0);
-		Solution.vA(3) = Solution.vA(2);
-		Solution.tA(2) = (Solution.vA(2) - v0) / a;
-		Solution.tA(3) = (Solution.vA(2) - v0) / a;
-		Solution.tA(4) = (Solution.vA(2) - v0) / a + (Solution.vA(3) - vf) / a;
+		solution.accDec.v(2) = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
+		solution.accDec.v(3) = solution.accDec.v(2);
+		solution.accDec.t(2) = (solution.accDec.v(2) - v_0) / a;
+		solution.accDec.t(3) = (solution.accDec.v(2) - v_0) / a;
+		solution.accDec.t(4) = (solution.accDec.v(2) - v_0) / a + (solution.accDec.v(3) - v_f) / a;
 		
-	else % Acc/dec profile saturated at vmax
-		Solution.MoveA = PATH_ACC_DEC_SATURATED;
+	else % Acc/dec profile saturated at v_max
+		solution.accDec.move = PATH_ACC_DEC_SATURATED;
 		
 		% Determine time at set velocity
-		tVmax12 = (dx - VmaxDistance) / vmax;
-		Solution.vA(2) = vmax;
-		Solution.vA(3) = vmax;
-		Solution.tA(2) = (vmax - v0) / a;
-		Solution.tA(3) = (vmax - v0) / a + tVmax12;
-		Solution.tA(4) = (vmax - v0) / a + tVmax12 + (vmax - vf) / a;
+		dt_12 = (dx - dx_u) / v_max;
+		solution.accDec.v(3) = v_max;
+		solution.accDec.v(2) = v_max;
+		solution.accDec.t(2) = (v_max - v_0) / a;
+		solution.accDec.t(3) = (v_max - v_0) / a + dt_12;
+		solution.accDec.t(4) = (v_max - v_0) / a + dt_12 + (v_max - v_f) / a;
 		
 	end % Vmax distance threshold?
 	
 	% Determine the time maximizing profile
-	VminDistance = (v0 ^ 2 + vf ^ 2 - 2.0 * vmin ^ 2) / (2.0 * a);
-	if dx < VminDistance % Dec/acc profile with dip
-		Solution.MoveB = PATH_DEC_ACC_PEAK;
+	dx_l = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * a);
+	if dx < dx_l % Dec/acc profile with dip
+		solution.decAcc.move = PATH_DEC_ACC_PEAK;
 		
 		% Determine the dip velocity
-		Solution.vB(2) = sqrt((v0 ^ 2 + vf ^ 2) / 2.0 - dx * a);
-		Solution.vB(3) = Solution.vB(2);
-		Solution.tB(2) = (v0 - Solution.vB(2)) / a;
-		Solution.tB(3) = (v0 - Solution.vB(2)) / a;
-		Solution.tB(4) = (v0 - Solution.vB(2)) / a + (vf - Solution.vB(3)) / a;
+		solution.decAcc.v(2) = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * a);
+		solution.decAcc.v(3) = solution.decAcc.v(2);
+		solution.decAcc.t(2) = (v_0 - solution.decAcc.v(2)) / a;
+		solution.decAcc.t(3) = (v_0 - solution.decAcc.v(2)) / a;
+		solution.decAcc.t(4) = (v_0 - solution.decAcc.v(2)) / a + (v_f - solution.decAcc.v(3)) / a;
 		
-	else % Dec/acc profile saturated at vmin
-		Solution.MoveB = PATH_DEC_ACC_SATURATED;
+	else % Dec/acc profile saturated at v_min
+		solution.decAcc.move = PATH_DEC_ACC_SATURATED;
 		
 		% Determine the time at set velocity
-		tVmin12 = (dx - VminDistance) / vmin;
-		Solution.vB(2) = vmin;
-		Solution.vB(3) = vmin;
-		Solution.tB(2) = (v0 - vmin) / a;
-		Solution.tB(3) = (v0 - vmin) / a + tVmin12;
-		Solution.tB(4) = (v0 - vmin) / a + tVmin12 + (vf - vmin) / a;
+		dt_12 = (dx - dx_l) / v_min;
+		solution.decAcc.v(2) = v_min;
+		solution.decAcc.v(3) = v_min;
+		solution.decAcc.t(2) = (v_0 - v_min) / a;
+		solution.decAcc.t(3) = (v_0 - v_min) / a + dt_12;
+		solution.decAcc.t(4) = (v_0 - v_min) / a + dt_12 + (v_f - v_min) / a;
 		
 	end % Vmin distance threshold?
 	
 	% Set solution
-	Solution.vA(1) = v0;
-	Solution.vA(4) = vf;
-	Solution.vB(1) = v0;
-	Solution.vB(4) = vf;
-	Solution.tdiff = Solution.tB(4) - Solution.tA(4);
-	Valid = true;
+	solution.accDec.v(1) = v_0;
+	solution.accDec.v(4) = v_f;
+	solution.decAcc.v(1) = v_0;
+	solution.decAcc.v(4) = v_f;
+	solution.dt_tilde = solution.decAcc.t(4) - solution.accDec.t(4);
+	valid = true;
 	
-	if PrintResult
-		printf("GetTimeDiff call: Time diff %.3f - %.3f = %.3f, Moves %d, %d\n", Solution.tB(4), Solution.tA(4), Solution.tdiff, Solution.MoveA, Solution.MoveB);
+	if printResult
+		printf("PathTimeDiff call: Time diff %.3f - %.3f = %.3f, Moves %d, %d\n", solution.decAcc.t(4), solution.accDec.t(4), solution.dt_tilde, solution.accDec.move, solution.decAcc.move);
 	end
 	
 end % Function

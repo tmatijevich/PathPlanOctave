@@ -10,5 +10,5 @@ a 		= [16.75 * ones(size(dx)), 12.300 * ones(size(dx))];
 dx 		= [dx, dx];
 
 for i = 1:length(dx)
-	[Solution(i), Valid(i)] = GetVel(dt(i), dx(i), v0(i), vf(i), vmin(i), vmax(i), a(i), true);
+	[Solution(i), Valid(i)] = PathVel(dt(i), dx(i), v0(i), vf(i), vmin(i), vmax(i), a(i), true);
 end
