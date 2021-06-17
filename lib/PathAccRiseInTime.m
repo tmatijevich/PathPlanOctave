@@ -1,7 +1,7 @@
 %!octave
 
-function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
-	% PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
+function [solution, valid] = PathAccRiseInTime(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
+	% PathAccRiseInTime(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
 	% Determine the minimum acceleration to achieve movement extremes given the time difference and including a rise from standstill
 	% Assumptions:
 	% 	- Positive distance and velocity
@@ -33,25 +33,25 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 	% Input requirements
 	% #1: Plausible velocity limits
 	if (v_min < 0.0) || (v_max <= v_min)
-		printf("PathAccInTimeDiffWithRise call failed: Implausible velocity limits %.3f, %.3f\n", v_min, v_max); 
+		printf("PathAccRiseInTime call failed: Implausible velocity limits %.3f, %.3f\n", v_min, v_max); 
 		valid = false; 
 		return;
 	
 	% #2: Endpoint velocities within limits
 	elseif (v_1 < v_min) || (v_1 > v_max) || (v_f < v_min) || (v_f > v_max)
-		printf("PathAccInTimeDiffWithRise call failed: Endpoint velocities %.3f, %.3f exceed limits %.3f, %.3f\n", v0, v_f, v_min, v_max); 
+		printf("PathAccRiseInTime call failed: Endpoint velocities %.3f, %.3f exceed limits %.3f, %.3f\n", v0, v_f, v_min, v_max); 
 		valid = false; 
 		return;
 	
 	% #3: Positive time difference and distance
 	elseif (dt_tilde <= 0.0) || (dx <= 0.0)
-		printf("PathAccInTimeDiffWithRise call failed: Time difference %.3f or distance %.3f is non-positive\n", dt_tilde, dx); 
+		printf("PathAccRiseInTime call failed: Time difference %.3f or distance %.3f is non-positive\n", dt_tilde, dx); 
 		valid = false; 
 		return;
 		
 	% #4: Valid time difference given distance and velocity limits
 	elseif (dt_tilde >= (dx / v_min - dx / v_max))
-		printf("PathAccInTimeDiffWithRise call failed: Time difference %.3f exceeds acceleration limit %.3f\n", dt_tilde, dx / v_min - dx / v_max); 
+		printf("PathAccRiseInTime call failed: Time difference %.3f exceeds acceleration limit %.3f\n", dt_tilde, dx / v_min - dx / v_max); 
 		valid = false; 
 		return;
 		
@@ -164,7 +164,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 		
 		if !rootsValid
-			printf("PathAccInTimeDiffWithRise call failed: Invalid roots for peak movement\n");
+			printf("PathAccRiseInTime call failed: Invalid roots for peak movement\n");
 			valid = false;
 			return;
 			
@@ -173,7 +173,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 				solution.accDec.a = max(rootsSolution.r_1, rootsSolution.r_2);
 				solution.decAcc.a = solution.accDec.a;
 			else
-				printf("PathAccInTimeDiffWithRise call failed: Non-position 2nd order roots solution\n");
+				printf("PathAccRiseInTime call failed: Non-position 2nd order roots solution\n");
 			end % Positive root?
 		end % Valid roots?
 	end % Required 2nd order solution?
@@ -226,7 +226,7 @@ function [solution, valid] = PathAccInTimeDiffWithRise(dt_tilde, dx, v_1, v_f, v
 	valid = true;
 	
 	if printResult
-		printf("PathAccInTimeDiffWithRise call: a = %.3f, Case %d, Moves %d, %d\n", solution.accDec.a, solution.case, solution.accDec.move, solution.decAcc.move);
+		printf("PathAccRiseInTime call: a = %.3f, Case %d, Moves %d, %d\n", solution.accDec.a, solution.case, solution.accDec.move, solution.decAcc.move);
 	end
 	
 end % Function
