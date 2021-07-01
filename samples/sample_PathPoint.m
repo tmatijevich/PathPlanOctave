@@ -1,20 +1,23 @@
 %!octave
 
-v = [0.0, 1.9, 0.75, 0.75, 1.2];
-t = [0.0, 0.25, 0.40, 0.50, 0.60];
+v = [0.0, 1.9, 0.75, 0.75, 0.75, 1.2];
+t = [0.0, 0.25, 0.40, 0.50, 0.50, 0.60];
 
-N = 5;
+N = 6;
 tplot = t(1):0.01:t(N); n = length(tplot);
 xplot = zeros(n,1);
 vplot = zeros(n,1);
 aplot = zeros(n,1);
 
 for i = 1:n
-	[soln, valid] = PathPoint(0.0, t(1:N), v(1:N), N, tplot(i));
+	printf("%3d Time %1.3f s\n", i, tplot(i));
+	[soln, valid] = PathPoint(0.0, t(1:N), v(1:N), N, tplot(i), 1.5);
 	if valid
 		xplot(i) = soln.x;
 		vplot(i) = soln.v;
 		aplot(i) = soln.a;
+	else
+		return; % Leave loop and leave script
 	end
 end
 

@@ -1,20 +1,20 @@
 # LibPathPlanOctave
 
-This project contains functions and scripts to demonstrate the PathPlan library. Written in MATLAB, it is intended for use with [Octave](https://www.gnu.org/software/octave/index). Updates and features are developed and tested here for the PathPlan library.
+This project contains the [PathPlan](https://github.com/tmatijevich/LibPathPlan) library and scripts to demonstrate its functionality. The PathPlan library is a set of kinematic functions for one-dimensional motion planning.
 
 - Clone the repository: `git@github.com:tmatijevich/LibPathPlanOctave.git`
 	- Alternative: `ssh://git@ssh.github.com:443/tmatijevich/LibPathPlanOctave.git`
 	
 ## PathPlan (Octave)
 
-Developing the PathPlan library in Octave utilizes the easy plotting and brute-testing capabilities.
+This project's PathPlan library is written in MATLAB for quick plotting and testing capabilities. As an alternative to commercial software, [GNU Octave](https://www.gnu.org/software/octave/) is used as the software environment.
 
-This library assumes:
-- Positive distance and velocity.
-- Symmetric acceleration and deceleration.
-- Zero jerk.
+Assumptions
+- Positive distance and velocity
+- Symmetric acceleration and deceleration
+- Infinite jerk
 
-List of functions:
+List of functions
 - PathAcc
 	- `a = PathAcc(dt, dx, v_0, v_f, v_min, v_max)`
 	- Minimum acceleration to move in time over a distance
@@ -26,10 +26,10 @@ List of functions:
 	- Maximum distance to move with acceleration in time
 - PathVel
 	- `v = PathVel(dt, dx, v_0, v_f, v_min, v_max, a)`
-	- Minimum intermediate velocity to move with acceleration in time over a distance
+	- Minimum velocity to move with acceleration in time over a distance
 - PathTimeDiff
 	- `dt_tilde = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a)`
-	- Difference in time duration between fastest (acc-dec) and slowest (dec-acc) profiles
+	- Difference in durations between fastest possible and slowest possible profiles
 - PathAccInTime
 	- `a = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max)`
 	- Minimum acceleration to achieve a move within a window of time
@@ -38,10 +38,10 @@ List of functions:
 	- Minimum acceleration to achieve a move with rise in a window of time
 - PathRoots
 	- `r_1, r_2 = PathRoots(p_2, p_1, p_0)`
-	- Determine the real roots of a second order polynomial (quadratic equation) given the coefficients `p_2 * x^2 + p_1 * x + p_0 = 0`.
+	- Real roots of a second order polynomial
 - PathPoint
-	- `x, v, a = PathPoint(x_0, t_[i], v_[i], n, t)`
-	- Determine the position, velocity, and acceleration at a point in time along a velocity profile.
+	- `x, v, a = PathPoint(x_0, t_[n], v_[n], n, t)`
+	- Position, velocity, and acceleration at a point in time along a linear-interpolated velocity profile
 	
 ## Sample Plots
 
