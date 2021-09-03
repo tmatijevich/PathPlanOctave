@@ -10,6 +10,7 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 	solution.x 	= 0.0;
 	solution.v 	= 0.0;
 	solution.a 	= 0.0;
+	solution.j 	= 0.0;
 	valid 		= false;
 	
 	% Input requirements
@@ -100,7 +101,7 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 				a_dir = 1.0;
 			elseif uv_(b) < uv_(a)
 				a_dir = -1.0;
-			endif
+			end
 			
 			% Determine the nominal acceleration magnitude
 			dt = ut_(b) - ut_(a);
@@ -130,7 +131,7 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 				uj_(a)     = a_dir * uj;
 				uj_(a + 1) = 0.0;
 				uj_(a + 2) = (-1.0) * uj_(a);
-			endif % k == 1?
+			end % k == 1?
 			
 			% Compute position and velocity of the micro segments
 			uv_(a+1) = uv_(a+0) + ua_(a+0) * (ut_(a+1) - ut_(a+0)) + 0.5 * uj_(a+0) * (ut_(a+1) - ut_(a+0)) ^ 2;
@@ -138,8 +139,8 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 			ux_(a+1) = ux_(a+0) + uv_(a+0) * (ut_(a+1) - ut_(a+0)) + 0.5 * ua_(a+0) * (ut_(a+1) - ut_(a+0)) ^ 2 + (1/6) * uj_(a+0) * (ut_(a+1) - ut_(a+0)) ^ 3;
 			ux_(a+2) = ux_(a+1) + uv_(a+1) * (ut_(a+2) - ut_(a+1)) + 0.5 * ua_(a+1) * (ut_(a+2) - ut_(a+1)) ^ 2 + (1/6) * uj_(a+1) * (ut_(a+2) - ut_(a+1)) ^ 3;
 			ux_(a+3) = ux_(a+2) + uv_(a+2) * (ut_(a+3) - ut_(a+2)) + 0.5 * ua_(a+2) * (ut_(a+3) - ut_(a+2)) ^ 2 + (1/6) * uj_(a+2) * (ut_(a+3) - ut_(a+2)) ^ 3;
-		endif % dt > 0 & dv > 0?
-	endfor % Loop macro segments
+		end % dt > 0 & dv > 0?
+	end % Loop macro segments
 	
 	% Find the requested micro segment
 	if t == t_(n)
@@ -149,9 +150,9 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 			if t < ut_(k)
 				ui = k - 1;
 				break;
-			endif % Within time?
-		endfor % Loop array
-	endif % Final segment?
+			end % Within time?
+		end % Loop array
+	end % Final segment?
 	
 	if exist("ui", "var") == 0
 		printf("Micro segment not found for t %.16f s in range [%.16f, %.16f] s\n", t, t_(1), t_(n));
