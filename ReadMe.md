@@ -51,7 +51,7 @@ This library describes movement profiles in terms of velocity and time, where po
 
 The `PathAcc()` function determines the minimum acceleration of a linear motion profile given the time, distance, initial & final velocities, and velocity limits.
 
-![2021-05-18_15 08 47](https://user-images.githubusercontent.com/33841634/118716876-f5dc0700-b7ea-11eb-8505-a900ce2f5810.png)
+![2021-10-08_18 30 29](https://user-images.githubusercontent.com/33841634/136634480-e16be8c3-79c9-416d-92fa-b1a5a430ebeb.png)
 
 Provided a velocity point profile, the `PathPoint()` function will return the position, velocity, and acceleration at an intermediate time value.
 
