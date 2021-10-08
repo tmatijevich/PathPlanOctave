@@ -11,7 +11,7 @@ vmax 	= 3.0;
 % Create the figure
 hFig = figure(1, "name", "PathAcc() Sample"); set(hFig, "menubar", "none");
 CurrentPosition = get(gcf, "position");
-set(gcf, "position", [CurrentPosition(1:2) 830 720]);
+set(gcf, "position", [CurrentPosition(1:2) 800 600]);
 textSize = 13;
 tickSize = 10;
 
@@ -28,33 +28,14 @@ a_ = zeros(n,1);
 for i = 1:n
 	[Solution, Valid] = PathAcc(dt, dx_(i), v0, vf, vmin, vmax, true);
 	if Valid
-		ct{i} = Solution.t;
-		cv{i} = Solution.v;
+		ct{i} = Solution.t_;
+		cv{i} = Solution.v_;
 		a_(i) = Solution.a;
 	end
 end
 
-% Create the first subplot
-subplot(3,2,1);
-cla;
-hold on;
-title("PathAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
-for i = 1:n
-	zplt = dx_(i) .* ones(1, length(ct{i}));
-	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.5);
-end
-hColorbar = colorbar;
-set(hColorbar, "fontsize", tickSize);
-hColorbarTitle = get(hColorbar, "label");
-set(hColorbarTitle, "string", "Distance {\\delta}x [m]");
-set(hColorbarTitle, "interpreter", "tex");
-set(hColorbarTitle, "fontsize", textSize);
-set(gca, "fontsize", tickSize);
-xlabel("Time [s]", "fontsize", textSize);
-ylabel("Velocity [m/s]", "fontsize", textSize);
-
 % Create the second subplot
-subplot(3,2,3);
+subplot(2,2,1);
 cla;
 hold on;
 title("PathAcc({\\delta}t = 0.300 s, ...)", "interpreter", "tex", "fontsize", textSize);
@@ -72,7 +53,7 @@ xlabel("Time [s]", "fontsize", textSize);
 ylabel("Velocity [m/s]", "fontsize", textSize);
 
 % Create the third scatter plot
-subplot(3,2,5);
+subplot(2,2,3);
 cla;
 hold on;
 title("PathAcc() vs Distance", "fontsize", textSize);
@@ -104,33 +85,14 @@ a_ = zeros(n,1);
 for i = 1:n
 	[Solution, Valid] = PathAcc(dt_(i), dx, v0, vf, vmin, vmax, true);
 	if Valid
-		ct{i} = Solution.t;
-		cv{i} = Solution.v;
+		ct{i} = Solution.t_;
+		cv{i} = Solution.v_;
 		a_(i) = Solution.a;
 	end
 end
 
-% Create the first subplot
-subplot(3,2,2);
-cla;
-hold on;
-title("PathAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
-for i = 1:n
-	zplt = dt_(i) .* ones(1, length(ct{i}));
-	surf([ct{i}(:) ct{i}(:)], [cv{i}(:) cv{i}(:)], [zplt(:) zplt(:)], "facecolor", "none", "edgecolor", "interp", "linewidth", 1.2);
-end
-hColorbar = colorbar;
-set(hColorbar, "fontsize", tickSize);
-hColorbarTitle = get(hColorbar, "label");
-set(hColorbarTitle, "string", "Time Duration {\\delta}t [s]");
-set(hColorbarTitle, "interpreter", "tex");
-set(hColorbarTitle, "fontsize", textSize);
-set(gca, "fontsize", tickSize);
-xlabel("Time [s]", "fontsize", textSize);
-ylabel("Velocity [m/s]", "fontsize", textSize);
-
 % Create the second subplot
-subplot(3,2,4);
+subplot(2,2,2);
 cla;
 hold on;
 title("PathAcc(..., {\\delta}x = 0.450 m, ...)", "interpreter", "tex", "fontsize", textSize);
@@ -148,7 +110,7 @@ xlabel("Time [s]", "fontsize", textSize);
 ylabel("Velocity [m/s]", "fontsize", textSize);
 
 % Create the third scatter plot
-subplot(3,2,6);
+subplot(2,2,4);
 cla;
 hold on;
 title("PathAcc() vs Time Duration", "fontsize", textSize);
