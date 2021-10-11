@@ -57,7 +57,7 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 		return;
 	
 	% #3 Positive inputs
-	elseif (dt <= 0.0) || (dx <= 0.0)
+	elseif dt <= 0.0 || dx <= 0.0
 		printf("PathAcc call failed: Time duration %.3f or distance %.3f non-positive\n", dt, dx); 
 		valid = false; 
 		return;
