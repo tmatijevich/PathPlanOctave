@@ -1,6 +1,6 @@
 %!octave
 
-function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult = false)
+function [solution, valid] = PathPoint(x_0, t_, v_, a_0, n, t, k = 1.0, printResult = false)
 	% function [solution, valid] = PathPoint(x_0, t_, v_, n, t, printResult = false)
 	% Determine the point on a piecewise linear velocity profile
 	% Date: 2020-04-01
@@ -120,17 +120,32 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 				uj_(a + 2) = 0.0;
 			else
 				% a_bar != 0.0 because abs(dv) != 0.0
-				uj = (k * a_bar) ^ 2 / (k * a_bar * dt - abs(dv)); % k * a_bar > abs(dv) / dt because k > 1.0
-				% Numerator and denominator are non-zero
-				
-				ut_(a + 1) = ut_(a) + (k * a_bar) / uj;
-				ut_(a + 2) = ut_(b) - (k * a_bar) / uj;
-				ua_(a)     = 0.0;
-				ua_(a + 1) = a_dir * k * a_bar;
-				ua_(a + 2) = ua_(a + 1);
-				uj_(a)     = a_dir * uj;
-				uj_(a + 1) = 0.0;
-				uj_(a + 2) = (-1.0) * uj_(a);
+				a_1 	= k * a_bar;
+				a_0_hat = min(a_0, a_1);
+				if a == 1
+					uj = ((2.0 * a_1 ^ 2 - a_0_hat ^ 2) / 2.0 - (2.0 * a_1 - a_0_hat) * a_1) / (dv - dt * a_1);
+
+					ut_(a + 1) = ut_(a) + (a_1 - a_0_hat) / uj;
+					ut_(a + 2) = ut_(b) - a_1 / uj;
+					ua_(a)     = a_0_hat;
+					ua_(a + 1) = a_dir * a_1;
+					ua_(a + 2) = ua_(a + 1);
+					uj_(a)     = a_dir * uj;
+					uj_(a + 1) = 0.0;
+					uj_(a + 2) = (-1.0) * uj_(a);
+				else
+					uj = a_1 ^ 2 / (a_1 * dt - abs(dv)); % k * a_bar > abs(dv) / dt because k > 1.0
+					% Numerator and denominator are non-zero
+
+					ut_(a + 1) = ut_(a) + a_1 / uj;
+					ut_(a + 2) = ut_(b) - a_1 / uj;
+					ua_(a)     = 0.0;
+					ua_(a + 1) = a_dir * k * a_bar;
+					ua_(a + 2) = ua_(a + 1);
+					uj_(a)     = a_dir * uj;
+					uj_(a + 1) = 0.0;
+					uj_(a + 2) = (-1.0) * uj_(a);
+				end % a == 1?
 			end % k == 1?
 			
 			% Compute position and velocity of the micro segments

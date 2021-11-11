@@ -11,7 +11,7 @@ aplot = zeros(n,1);
 
 for i = 1:n
 	printf("%3d Time %1.3f s\n", i, tplot(i));
-	[soln, valid] = PathPoint(0.0, t(1:N), v(1:N), N, tplot(i), 1.2);
+	[soln, valid] = PathPoint(0.0, t(1:N), v(1:N), 5.0, N, tplot(i), 1.2);
 	if valid
 		xplot(i) = soln.x;
 		vplot(i) = soln.v;
