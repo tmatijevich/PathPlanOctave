@@ -120,14 +120,21 @@ function [solution, valid] = PathPoint(x_0, t_, v_, a_0, n, t, k = 1.0, printRes
 				uj_(a + 2) = 0.0;
 			else
 				% a_bar != 0.0 because abs(dv) != 0.0
-				a_1 	= k * a_bar;
-				a_0_hat = min(a_0, a_1);
-				if a == 1
-					uj = ((2.0 * a_1 ^ 2 - a_0_hat ^ 2) / 2.0 - (2.0 * a_1 - a_0_hat) * a_1) / (dv - dt * a_1);
+				a_1 = k * a_bar;
+				
+				if a == 1 && (a_dir > 0.0 && a_0 > 0.0) || (a_dir < 0.0 && a_0 < 0.0)
+					a_0_hat = min(abs(a_0), a_1);
+					[accSoln, accValid] = PathAcc(dt, dv, a_0_hat, 0.0, 0.0, a_1);
+					if !accValid
+						printf("a_0 PathAcc error\n");
+						return;
+					else
+						uj = accSoln.a;
+					end
 
 					ut_(a + 1) = ut_(a) + (a_1 - a_0_hat) / uj;
 					ut_(a + 2) = ut_(b) - a_1 / uj;
-					ua_(a)     = a_0_hat;
+					ua_(a)     = a_dir * a_0_hat;
 					ua_(a + 1) = a_dir * a_1;
 					ua_(a + 2) = ua_(a + 1);
 					uj_(a)     = a_dir * uj;
@@ -140,7 +147,7 @@ function [solution, valid] = PathPoint(x_0, t_, v_, a_0, n, t, k = 1.0, printRes
 					ut_(a + 1) = ut_(a) + a_1 / uj;
 					ut_(a + 2) = ut_(b) - a_1 / uj;
 					ua_(a)     = 0.0;
-					ua_(a + 1) = a_dir * k * a_bar;
+					ua_(a + 1) = a_dir * a_1;
 					ua_(a + 2) = ua_(a + 1);
 					uj_(a)     = a_dir * uj;
 					uj_(a + 1) = 0.0;

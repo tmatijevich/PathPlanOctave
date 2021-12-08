@@ -21,7 +21,7 @@ function [] = plot_PathAcc(dt, dx, v_0, v_f, v_min, v_max)
 		xPlot = zeros(size(tPlot));
 		aPlot = zeros(size(tPlot));
 		for i = 1:length(tPlot)
-			[pointSolution, pointValid] = PathPoint(0.0, solution.t_, solution.v_, 4, tPlot(i), 1.0, false);
+			[pointSolution, pointValid] = PathPoint(0.0, solution.t_, solution.v_, 0.0, 4, tPlot(i), 1.0, false);
 			if pointValid
 				xPlot(i) = pointSolution.x;
 				aPlot(i) = pointSolution.a;
