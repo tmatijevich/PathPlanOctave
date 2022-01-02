@@ -21,7 +21,7 @@
 %     dx   - Distance [Units]
 %     v_   - Velocity-point array [Units/s]
 %     a    - Acceleration magnitude [Units/s^2]
-%     move - Movement type (global)
+%     move - Movement type
 %   valid - Successful completion
 %
 % ASSUMPTIONS AND LIMITATIONS:
@@ -38,10 +38,10 @@
 
 function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult = false)
 	% Reference global variables
-	run GlobalVars;
+	run GlobalVar;
 	
 	% Reset solution
-	solution = struct('t_', [0.0, 0.0, 0.0, 0.0], 'dx', 0.0, 'v_', [0.0, 0.0, 0.0, 0.0], 'a', 0.0, 'move', PATH_MOVE_NONE);
+	solution = struct("t_", [0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE);
 	
 	% Input requirements
 	% #1 Plausible velocity limits
@@ -170,7 +170,7 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 	valid = true;
 	
 	if printResult
-		printf("PathAcc call: Acc %.3f, Vel %.3f, Move %d\n", solution.a, solution.v_(2), solution.move);
+		printf("PathAcc call: Acc %.3f, Vel %.3f, Move %s\n", solution.a, solution.v_(2), GetMove(solution.move));
 	end
 	
 end % Function

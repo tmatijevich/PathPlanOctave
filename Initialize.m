@@ -1,7 +1,7 @@
 %!octave
 
 % Add subdirectories
-addpath("lib", "samples", "plot", "test", "diag");
+addpath("lib", "samples", "plot", "test");
 
 % Declare and initialize global variables
 global PATH_MOVE_NONE 				= 0;  % Undefined

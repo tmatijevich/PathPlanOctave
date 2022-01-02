@@ -1,12 +1,37 @@
 %!octave
 
-function [solution, valid] = PathRoots(p_2, p_1, p_0, printResults = false)
-	% Return the real roots of a second order polynomial
-	% Date: 2020-05-13
-	% Created by: Tyler Matijevich
+% FUNCTION NAME:
+%   PathRoots
+%
+% DESCRIPTION:
+%   Reals roots of a second order polynomial
+%
+% INPUT:
+%   p_2 - 2nd order coefficient
+%   p_1 - 1st order coefficient
+%   p_0 - 0th order coefficient
+%   printResult - Print successful completion message
+%
+% OUTPUT:
+%   solution (struct) - Roots solution
+%     r_1 - First real root
+%     r_2 - Second real root (if exists)
+%   valid - Successful completion
+%
+% ASSUMPTIONS AND LIMITATIONS:
+%   - Only real roots, returns error if imaginary
+%
+% DATE CREATED:
+%   2020-05-13 
+%
+% AUTHOR:
+%   Tyler Matijevich
+%
+
+function [solution, valid] = PathRoots(p_2, p_1, p_0, printResult = false)
 	
 	% Reset solution
-	solution.r_1 = 0.0; solution.r_2 = 0.0;
+	solution = struct("r_1", 0.0, "r_2", 0.0);
 	
 	% Compute the discriminant
 	discriminant = p_1 ^ 2 - 4.0 * p_2 * p_0; % b^2 - 4ac
@@ -18,7 +43,7 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResults = false)
 			solution.r_2 = ((-p_1) - sqrt(discriminant)) / (2.0 * p_2);
 			
 		elseif discriminant < 0.0 % Imaginary roots
-			printf("PathRoots call warning: solution has imaginary roots\n");
+			printf("PathRoots call error: solution has imaginary roots\n");
 			valid = false;
 			return;
 			
@@ -41,8 +66,8 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResults = false)
 		end % Single root?
 	end % Two roots?
 	
-	if printResults
-		printf("PathRoots call: roots %1.3f, %1.3f\n", solution.r_1, solution.r_2)
+	if printResult
+		printf("PathRoots call: roots %.3f, %.3f\n", solution.r_1, solution.r_2)
 	end
 	valid = true;
 
