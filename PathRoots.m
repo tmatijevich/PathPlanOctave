@@ -32,6 +32,7 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResult = false)
 	
 	% Reset solution
 	solution = struct("r_1", 0.0, "r_2", 0.0);
+	valid = false;
 	
 	% Compute the discriminant
 	discriminant = p_1 ^ 2 - 4.0 * p_2 * p_0; % b^2 - 4ac
@@ -44,7 +45,6 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResult = false)
 			
 		elseif discriminant < 0.0 % Imaginary roots
 			printf("PathRoots call error: solution has imaginary roots\n");
-			valid = false;
 			return;
 			
 		else % Multiple root
@@ -60,7 +60,6 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResult = false)
 			
 		else % No roots
 			printf("PathRoots call warning: First order, no solution\n");
-			valid = false;
 			return;
 			
 		end % Single root?
