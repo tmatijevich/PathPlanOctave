@@ -1,25 +1,28 @@
 %!octave
 
-clear In;
+% Clear inputs
+clear dt_ dx_ v_0_ v_f_ v_min_ v_max_;
 
-% Create inputs
-In{1}.dt = 0.100; In{1}.dx = 0.100; In{1}.v0 = 1.000; In{1}.vf = 1.000; In{1}.vmin = 0.500; In{1}.vmax = 2.500;
-In{2}.dt = 0.100; In{2}.dx = 0.100; In{2}.v0 = 1.000; In{2}.vf = 1.000; In{2}.vmin = 1.000; In{2}.vmax = 2.500;
-In{3}.dt = 0.000; In{3}.dx = 0.100; In{3}.v0 = 1.000; In{3}.vf = 1.000; In{3}.vmin = 0.500; In{3}.vmax = 2.500;
-In{4}.dt = 0.000; In{4}.dx = 0.100; In{4}.v0 = 1.000; In{4}.vf = 1.000; In{4}.vmin = 0.500; In{4}.vmax = 0.900;
-In{5}.dt = 0.000; In{5}.dx = 0.100; In{5}.v0 = 1.000; In{5}.vf = 1.000; In{5}.vmin = 1.000; In{5}.vmax = 0.900;
-dt_ = 0.033:0.040:0.676; % 17
-offset = length(In);
-for i = (offset + 1):(offset + length(dt_))
-	In{i}.dt = dt_(i-offset); In{i}.dx = 0.311; In{i}.v0 = 0.900; In{i}.vf = 0.800; In{i}.vmin = 0.500; In{i}.vmax = 2.500;
-end
-dx_ = 0.053:0.035:0.527; % 14
-offset = length(In);
-for i = (offset + 1):(offset + length(dx_))
-	In{i}.dt = 0.199; In{i}.dx = dx_(i - offset); In{i}.v0 = 1.100; In{i}.vf = 1.300; In{i}.vmin = 0.500; In{i}.vmax = 2.500;
+% Test input requirements
+dt_(1) = 0.1; dx_(1) = 0.1; v_0_(1) = 1.0; v_f_(1) = 1.0; v_min_(1) = 1.0; v_max_(1) = 0.9; % Plausible limits
+dt_(2) = 0.1; dx_(2) = 0.1; v_0_(2) = 1.0; v_f_(2) = 1.0; v_min_(2) = 0.5; v_max_(2) = 0.9; % Valid endpoints
+dt_(3) = 0.0; dx_(3) = 0.1; v_0_(3) = 1.0; v_f_(3) = 1.0; v_min_(3) = 1.0; v_max_(3) = 0.9; % Positive inputs
+dt_(4) = 0.1; dx_(4) = 0.1; v_0_(4) = 1.0; v_f_(4) = 1.0; v_min_(4) = 1.0; v_max_(4) = 2.5; % Move limit
+dt_(5) = 0.1; dx_(5) = 0.1; v_0_(5) = 1.0; v_f_(5) = 1.0; v_min_(5) = 0.5; v_max_(5) = 2.5; % Zero acceleration
+
+dt_1 = 0.033:0.040:0.676;
+offset = length(dt_);
+for i = (offset+1):(offset+length(dt_1))
+	dt_(i) = dt_1(i-offset); dx_(i) = 0.311; v_0_(i) = 0.9; v_f_(i) = 0.8; v_min_(i) = 0.5; v_max_(i) = 2.5;
 end
 
-for i = 1:length(In) %36
-	printf("%d: ", i-1);
-	[Solution, Valid] = PathAcc(In{i}.dt, In{i}.dx, In{i}.v0, In{i}.vf, In{i}.vmin, In{i}.vmax, true);
+dx_1 = 0.053:0.035:0.527;
+offset = length(dt_);
+for i = (offset+1):(offset+length(dx_1))
+	dt_(i) = 0.199; dx_(i) = dx_1(i - offset); v_0_(i) = 1.1; v_f_(i) = 1.3; v_min_(i) = 0.5; v_max_(i) = 2.5;
+end
+
+for i = 1:length(dt_)
+	printf("%2d: ", i - 1);
+	PathAcc(dt_(i), dx_(i), v_0_(i), v_f_(i), v_min_(i), v_max_(i), true);
 end
