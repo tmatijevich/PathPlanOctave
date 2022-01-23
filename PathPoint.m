@@ -49,19 +49,19 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 		
 	% #2 Non-decreasing time points
 	for i = 2:n
-		if t_(i) < t_(i - 1) % Time points can be numerically equal, this is a common result of unsaturated velocity profiles in this library
+		if t_(i) < t_(i - 1) % Time points may be numerically equal, e.g. an unsaturated profile solution
 			printf("PathPoint call failed: Time point %d:%.3f s is non-decreasing of point %d:%.3f s\n", i, t_(i), i - 1, t_(i-1));
 			return;
-		end % Non-decreasing?
-	end % Loop time points
+		end 
+	end 
 	
-	% #3 Valid request time
+	% #3 Request time limit
 	if t < t_(1) || t > t_(n)
 		printf("PathPoint call failed: Requested time %.3f s exceeds endpoints %.3f s, %.3f s\n", t, t_(1), t_(n));
 		return;
 	end
 	
-	% #4 Valid jerk factor
+	% #4 Jerk factor limit
 	if k < 1.0 || k > 2.0
 		printf("PathPoint call failed: Jerk factor %.3f exceeds limits [1.0, 2.0]\n", k);
 		return;
@@ -197,4 +197,4 @@ function [solution, valid] = PathPoint(x_0, t_, v_, n, t, k = 1.0, printResult =
 		printf("PathPoint call: Pos %.3f, Vel %.3f, Acc %.3f, Jerk %.3f\n", solution.x, solution.v, solution.a, solution.j);
 	end
 	
-end % Function
+end % Function definition

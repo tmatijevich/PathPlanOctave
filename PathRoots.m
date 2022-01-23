@@ -70,4 +70,4 @@ function [solution, valid] = PathRoots(p_2, p_1, p_0, printResult = false)
 	end
 	valid = true;
 
-end % Function
+end % Function definition
