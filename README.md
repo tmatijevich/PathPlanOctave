@@ -23,7 +23,7 @@ List of functions:
 	- Minimum time to move with acceleration over a distance
 - PathDist
 	- `dx = PathDist(dt, v_0, v_f, v_min, v_max, a)`
-	- Maximum distance to move with acceleration in time
+	- Maximum distance from move with acceleration in time
 - PathVel
 	- `v = PathVel(dt, dx, v_0, v_f, v_min, v_max, a)`
 	- Minimum velocity to move with acceleration in time over a distance

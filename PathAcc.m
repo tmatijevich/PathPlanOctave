@@ -64,8 +64,7 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 	elseif dx <= v_min * dt || v_max * dt <= dx
 		printf("PathAcc call failed: Distance %.3f exceeds limits (%.3f, %.3f)\n", dx, v_min * dt, v_max * dt); 
 		return;
-		
-	end % Requirements
+	end
 	
 	% Intermediate velocity v_12 >= v_0, v_f or v_12 <= v_0, v_f in symmetric Acc + Dec profiles
 	
@@ -95,7 +94,6 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 				solution.t_(2) = 0.0;
 				solution.t_(3) = 0.0;
 			end % Positive acceleration
-			
 		end % dx_u?
 		
 	else % Dec/Acc
@@ -122,7 +120,6 @@ function [solution, valid] = PathAcc(dt, dx, v_0, v_f, v_min, v_max, printResult
 				solution.t_(3) = 0.0;
 			end % Positive acceleration
 		end % dx_l?
-		
 	end % dx_bar?
 	
 	% Find 2nd order roots for peak solution

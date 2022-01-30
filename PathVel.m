@@ -1,134 +1,125 @@
 %!octave
 
+% FUNCTION NAME: 
+%   PathVel
+%
+% DESCRIPTION: 
+%   Minimum velocity to move with acceleration in time over a distance
+%
+% INPUT:
+%   dt    - Time duration [s]
+%   dx    - Distance [Units]
+%   v_0   - Initial velocity [Units/s]
+%   v_f   - Final velocity [Units/s]
+%   v_min - Minimum velocity [Units/s]
+%   v_max - Maximum velocity [Units/s]
+%   a     - Acceleration magnitude [Units/s^2]
+%   printResult - Print successful completion message
+%
+% OUTPUT:
+%   solution (struct) - Base solution path
+%     t_   - Time-point array [s]
+%     dx   - Distance [Units]
+%     v_   - Velocity-point array [Units/s]
+%     a    - Acceleration magnitude [Units/s^2]
+%     move - Movement type
+%   valid - Successful completion
+%
+% ASSUMPTIONS AND LIMITATIONS:
+%   - Positive distance and velocity
+%   - Symmetric acceleration and deceleration
+%   - Zero jerk
+%
+% DATE CREATED: 
+%   2020-12-30
+%
+% AUTHOR:
+%   Tyler Matijevich
+%
+
 function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printResult = false)
-	% function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printResult = false)
-	% Determine the minimum intermediate velocity to change velocity with acceleration 
-	% in time over a distance
-	% Assumptions:
-	% 	- Positive distance and velocity
-	% 	- Symmetric acceleration and deceleration
-	% 	- Zero jerk
-	% Date: 2020-12-30
-	% Created by: Tyler Matijevich
-	
 	% Reference global variables
-	global PATH_MOVE_NONE;
-	global PATH_DEC_ACC_PEAK;
-	global PATH_DEC_ACC_SATURATED;
-	global PATH_DEC_DEC;
-	global PATH_ACC_DEC_PEAK;
-	global PATH_ACC_DEC_SATURATED;
-	global PATH_ACC_ACC;
+	run GlobalVar;
 	
 	% Reset solution
-	solution.t = [0.0, 0.0, 0.0, 0.0];
-	solution.dx = 0.0;
-	solution.v = [0.0, 0.0, 0.0, 0.0];
-	solution.a = 0.0;
-	solution.move = PATH_MOVE_NONE;
+	solution = struct("t_", [0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE);
+	valid = false;
 	
 	% Input requirements
-	% #1: Plausible velocity limits
-	if (v_min < 0.0) || (v_max <= v_min)
-		printf("PathVel call failed: Implausible velocity limits %.3f, %.3f\n", v_min, v_max); 
-		valid = false; 
+	% #1 Plausible velocity limits
+	if v_min < 0.0 || v_max <= v_min
+		printf("PathVel call failed: Implausible velocity limits [%.3f, %.3f] u/s\n", v_min, v_max); 
 		return;
 	
-	% #2: Endpoint velocities within limits
-	elseif (v_0 < v_min) || (v_0 > v_max) || (v_f < v_min) || (v_f > v_max)
-		printf("PathVel call failed: Endpoint velocities %.3f, %.3f exceed limits %.3f, %.3f\n", v_0, v_f, v_min, v_max); 
-		valid = false; 
+	% #2 Valid endpoint velocities
+	elseif v_0 < v_min || v_max < v_0 || v_f < v_min || v_max < v_f
+		printf("PathVel call failed: Endpoint velocities %.3f, %.3f u/s exceed limits [%.3f, %.3f] u/s\n", v_0, v_f, v_min, v_max); 
 		return;
 	
-	% #3: Positive time, distance, and acceleration
-	elseif (dt <= 0.0) || (dx <= 0.0) || (a <= 0.0)
-		printf("PathVel call failed: Time, distance, or acceleration non-positive %.3f, %.3f, %.3f\n", dt, dx, a); 
-		valid = false; 
+	% #3 Positive inputs
+	elseif dt <= 0.0 || dx <= 0.0 || a <= 0.0 
+		printf("PathVel call failed: Duration %.3f s, distance %.3f u, or acceleration %.3f u/s^2 non-positive\n", dt, dx, a); 
 		return;
 		
-	% #4: Valid time and distance given acceleration
-	elseif (dt < abs(v_0 - v_f) / a) || (dx < abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a))
-		printf("PathVel call failed: Impossible time %.3f or distance %.3f given limits %.3f, %.3f\n", dt, dx, abs(v_0 - v_f) / a, abs(v_0 ^ 2 - v_f ^ 2) / a);
-		valid = false; 
+	% #4 Plausible move
+	elseif dt < abs(v_0 - v_f) / a
+		printf("PathVel call failed: Duration %.3f s subceeds minimum %.3f s\n", dt, abs(v_0 - v_f) / a); 
 		return;
-		
-	end % Requirements
+	end
 	
-	% Check if the distance can be fulfilled given the time duration, velocity limits, and acceleration
-	v_p = (a * dt + v_0 + v_f) / 2.0;
-	if v_p <= v_max
-		dx_max = (2.0 * v_p ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
-	else
+	% #4.1 Plausible move
+	% Check distance (given acceleration and time)
+	v_12 = (a * dt + v_0 + v_f) / 2.0; % Test maximum v_12
+	if v_12 <= v_max % Peak
+		dx_max = (2.0 * v_12 ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
+	else % Saturated
 		dx_max = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a) + v_max * (dt - ((2.0 * v_max - v_0 - v_f) / a));
 	end
-	if dx > dx_max
-		printf("PathVel call failed: Distance %.3f exceeds maximum %.3f\n", dx, dx_max);
-		valid = false;
-		return;
-	end
-	
-	vdip = (v_0 + v_f - a * dt) / 2.0;
-	if vdip >= v_min
-		dx_min = (v_0 ^ 2 + v_f ^ 2 - 2.0 * vdip ^ 2) / (2.0 * a);
-	else
+
+	v_12 = (v_0 + v_f - a * dt) / 2.0; % Test minimum v_12
+	if v_12 >= v_min % Dip
+		dx_min = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_12 ^ 2) / (2.0 * a);
+	else % Saturated
 		dx_min = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * a) + v_min * (dt - ((v_0 + v_f - 2.0 * v_min) / a));
 	end
-	if dx < dx_min
-		printf("PathVel call failed: Distance %.3f exceeds minimum %.3f\n", dx, dx_min);
-		valid = false;
+
+	if dx < dx_min || dx > dx_max
+		printf("PathVel call failed: Distance %.3f u exceeds limits [%.3f, %.3f] u\n", dx, dx_min, dx_max);
 		return;
 	end
 	
-	% Determine nominal distance which decide acceleration directions
+	% Compute nominal distance and time
 	dt_bar = abs(v_0 - v_f) / a;
 	dx_bar = abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
-	dx_a1 = v_0 * (dt - dt_bar) + dx_bar;
-	dx_a2 = dx_bar + v_f * (dt - dt_bar);
+	dx_a1 = v_0 * (dt - dt_bar) + dx_bar; % Hold v_0 then acceleration to v_f
+	dx_a2 = dx_bar + v_f * (dt - dt_bar); % Accelerate to v_f then hold v_f
 	
-	% Determine the sign of both acceleration phases
-	if dx > dx_a1
-		a1Sign = 1.0;
-	elseif dx < dx_a1
-		a1Sign = -1.0;
-	else
-		a1Sign = 0.0;
-	end
+	% Compute sign of acceleration phases
+	sign_a1 = (dx > dx_a1) - (dx < dx_a1);
+	sign_a2 = (dx < dx_a2) - (dx > dx_a2);
 	
-	if dx > dx_a2
-		a2Sign = -1.0;
-	elseif dx < dx_a2
-		a2Sign = 1.0;
-	else
-		a2Sign = 0.0;
-	end
-	
-	% Solve for the three cases
-	if a1Sign == 1.0 && a2Sign == -1.0 % ACC_DEC
-		% Assume the move is a saturated approaching a peak profile only when dx = dx_max and v_p <= v_max
-		solution.move = PATH_ACC_DEC_SATURATED;
+	% Three cases
+	if sign_a1 == sign_a2 % Acc/Acc or Dec/Dec
+		if sign_a1 >= 0.0
+			solution.move = PATH_MOVE_ACCACC;
+		else
+			solution.move = PATH_MOVE_DECDEC;
+		end
+		if sign_a1 == 0.0
+			solution.v_(2) = v_f; % dx == dx_a1 == dx_a2 and dt == dt_bar
+		else
+			solution.v_(2) = (dx - dx_bar) / (dt - dt_bar); 
+		end
+
+	elseif sign_a1 == 1.0 && sign_a2 == -1.0 % Acc/Dec
+		solution.move = PATH_MOVE_ACCDECSATURATED; % Unsaturated only when dx == dx_max and v_12 < v_max
 		
 		p_2 = - 1.0;
 		p_1 = a * (dt - dt_bar) + 2.0 * max(v_0, v_f);
 		p_0 = (-1.0) * max(v_0, v_f) ^ 2 - a * (dx - dx_bar);
 		
-	elseif a1Sign == a2Sign % ACC_ACC or DEC_DEC
-		if a1Sign == 1.0
-			solution.move = PATH_ACC_ACC;
-			solution.v(2) = (dx - dx_bar) / (dt - dt_bar);
-		elseif a1Sign == -1.0
-			solution.move = PATH_DEC_DEC;
-			solution.v(2) = (dx - dx_bar) / (dt - dt_bar);
-		else
-			if v_f > v_0
-				solution.move = PATH_ACC_ACC;
-			else
-				solution.move = PATH_DEC_DEC;
-			end
-			solution.v(2) = v_f;
-		end
-		
-	else % DEC_ACC
-		solution.move = PATH_DEC_ACC_SATURATED;
+	else % Dec/Acc
+		solution.move = PATH_MOVE_DECACCSATURATED;
 		
 		p_2 = 1.0;
 		p_1 = a * (dt - dt_bar) - 2.0 * min(v_0, v_f);
@@ -136,38 +127,33 @@ function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printRes
 		
 	end
 	
-	% Use quadratic function
-	if (solution.move == PATH_ACC_DEC_SATURATED) || (solution.move == PATH_DEC_ACC_SATURATED)
+	% Find roots
+	if solution.move == PATH_MOVE_ACCDECSATURATED || solution.move == PATH_MOVE_DECACCSATURATED
 		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 		
 		if !rootsValid
-			printf("PathVel call failed: Invalid roots for movement\n");
-			valid = false;
+			printf("PathVel call failed: Invalid roots solution for move %s\n", GetMove(solution.move));
 			return;
-			
+		
+		if solution.move == PATH_ACC_DEC_SATURATED
+			solution.v_(2) = min(rootsSolution.r_1, rootsSolution.r_2);
 		else
-			% Choose the appropriate root
-			if solution.move == PATH_ACC_DEC_SATURATED
-				solution.v(2) = min(rootsSolution.r_1, rootsSolution.r_2);
-			else
-				solution.v(2) = max(rootsSolution.r_1, rootsSolution.r_2);
-			end
-			
+			solution.v_(2) = max(rootsSolution.r_1, rootsSolution.r_2);
 		end
 	end
 	
-	solution.v(1) = v_0;
-	solution.v(3) = solution.v(2);
-	solution.v(4) = v_f;
-	solution.t(2) = abs(v_0 - solution.v(2)) / a;
-	solution.t(3) = dt - abs(solution.v(3) - v_f) / a;
-	solution.t(4) = dt;
-	solution.a = a;
-	solution.dx = dx;
+	solution.dx 	= dx;
+	solution.v_(1) 	= v_0;
+	solution.v_(3) 	= solution.v_(2);
+	solution.v_(4)	= v_f;
+	solution.t_(2) 	= abs(v_0 - solution.v_(2)) / a;
+	solution.t_(3) 	= max(dt - abs(solution.v_(3) - v_f) / a, solution.t_(2); % Ensure non-decreasing time given floating point subtraction
+	solution.t_(4) 	= dt;
+	solution.a 		= a;
 	valid = true;
 	
 	if printResult
-		printf("PathVel call: Vel %.3f, Move %d\n", solution.v(2), solution.move);
+		printf("PathVel call: Vel %.3f u/s, Move %s\n", solution.v_(2), GetMove(solution.move));
 	end
 	
-end
+end % Function defintion

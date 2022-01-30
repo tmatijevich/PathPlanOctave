@@ -1,117 +1,135 @@
 %!octave
 
+% FUNCTION NAME: 
+%   PathTimeDiff
+%
+% DESCRIPTION: 
+%   Difference in time durations between fastest and slowest moves
+%
+% INPUT:
+%   dx    - Distance [Units]
+%   v_0   - Initial velocity [Units/s]
+%   v_f   - Final velocity [Units/s]
+%   v_min - Minimum velocity [Units/s]
+%   v_max - Maximum velocity [Units/s]
+%   a     - Acceleration magnitude [Units/s^2]
+%   printResult - Print successful completion message
+%
+% OUTPUT:
+%   solution (struct) - Time difference solution path
+%     accDec (struct)
+%       t_   - Time-point array [s]
+%       dx   - Distance [Units]
+%       v_   - Velocity-point array [Units/s]
+%       a    - Acceleration magnitude [Units/s^2]
+%       move - Movement type
+%     decAcc
+%       (same as accDec)
+%     dt_tilde - Difference in duration between accDec and decAcc profiles [s]
+%   valid - Successful completion
+%
+% ASSUMPTIONS AND LIMITATIONS:
+%   - Positive distance and velocity
+%   - Symmetric acceleration and deceleration
+%   - Zero jerk
+%
+% DATE CREATED: 
+%   2020-03-25
+%
+% AUTHOR:
+%   Tyler Matijevich
+%
+
 function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printResult = false)
-	% Determine the differnce between the time minimizing and time maximizing velocity profiles
-	% Assumptions:
-	% 	- Positive distance and velocity
-	% 	- Symmetric acceleration and deceleration
-	% 	- Zero jerk
-	% Date: 2020-03-25
-	% Created by: Tyler Matijevich
-	
 	% Reference global variables
-	global PATH_MOVE_NONE;
-	global PATH_DEC_ACC_PEAK;
-	global PATH_DEC_ACC_SATURATED;
-	global PATH_ACC_DEC_PEAK;
-	global PATH_ACC_DEC_SATURATED;
+	run GlobalVar;
 	
 	% Reset solution
-	solution.accDec.v = [0.0, 0.0, 0.0, 0.0];
-	solution.accDec.t = [0.0, 0.0, 0.0, 0.0];
-	solution.accDec.move = PATH_MOVE_NONE;
-	solution.decAcc.v = [0.0, 0.0, 0.0, 0.0];
-	solution.decAcc.t = [0.0, 0.0, 0.0, 0.0];
-	solution.decAcc.move = PATH_MOVE_NONE;
-	solution.dt_tilde = 0.0;
+	solution = struct("accDec", struct("t_", [0.0, 0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE),
+				"decAcc", struct("t_", [0.0, 0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE),
+				"dt_tilde", 0.0);
+	valid = false;
 	
 	% Input requirements
-	% #1: Plausible velocity limits
-	if (v_min <= 0.0) || (v_max <= v_min) % *** Requires non-zero v_min (& v_max)
-		printf("PathTimeDiff call failed: Implausible velocity limits %1.3f, %1.3f\n", v_min, v_max); 
-		valid = false; 
+	% #1 Plausible velocity limits
+	if v_min < 0.0 || v_max <= v_min
+		printf("PathTimeDiff call failed: Implausible velocity limits [%.3f, %.3f] u/s\n", v_min, v_max); 
 		return;
 	
-	% #2: Endpoint velocities within limits
-	elseif (v_0 < v_min) || (v_0 > v_max) || (v_f < v_min) || (v_f > v_max) % *** Thus requires non-zero endpoint velocities
-		printf("PathTimeDiff call failed: Endpoint velocities %1.3f, %1.3f exceed limits %1.3f, %1.3f\n", v_0, v_f, v_min, v_max); 
-		valid = false; 
+	% #2 Valid endpoint velocities
+	elseif v_0 < v_min || v_max < v_0 || v_f < v_min || v_max < v_f
+		printf("PathTimeDiff call failed: Endpoint velocities %.3f, %.3f u/s exceed limits [%.3f, %.3f] u/s\n", v_0, v_f, v_min, v_max); 
 		return;
 	
-	% #3: Positive distance and acceleration
-	elseif (dx <= 0.0) || (a <= 0.0)
-		printf("PathTimeDiff call failed: Distance or acceleration non-positive %1.3f, %1.3f\n", dx, a); 
-		valid = false; 
+	% #3 Positive inputs
+	elseif dx <= 0.0 || a <= 0.0
+		printf("PathTimeDiff call failed: Distance %.3f u or acceleration %.3f u/s^2 non-positive\n", dx, a); 
 		return;
 		
-	% #4: Valid distance given acceleration
+	% #4 Plausible move
 	elseif dx < (abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a))
-		printf("PathTimeDiff call failed: Implausible distance %1.3f given minimum %1.3f\n", dx, abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a)); 
-		valid = false; 
+		printf("PathTimeDiff call failed: Distance %.3f u subceeds minimum %.3f u\n", dx, abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a)); 
 		return;
-		
 	end
 	
-	% Determine the time minimizing profile
-	dx_u = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
-	if dx < dx_u % Acc/dec profile with peak
-		solution.accDec.move = PATH_ACC_DEC_PEAK;
+	% Time-minimizing profile
+	dx_u = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a); % Distance at maximum saturation limit
+	if dx < dx_u % Peak
+		solution.accDec.move = PATH_MOVE_ACCDECPEAK;
 		
-		% Determine the peak velocity
-		solution.accDec.v(2) = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
-		solution.accDec.v(3) = solution.accDec.v(2);
-		solution.accDec.t(2) = (solution.accDec.v(2) - v_0) / a;
-		solution.accDec.t(3) = (solution.accDec.v(2) - v_0) / a;
-		solution.accDec.t(4) = (solution.accDec.v(2) - v_0) / a + (solution.accDec.v(3) - v_f) / a;
+		% Compute v_12
+		solution.accDec.v_(2) = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
+		solution.accDec.v_(3) = solution.accDec.v_(2);
+		solution.accDec.t_(2) = (solution.accDec.v_(2) - v_0) / a;
+		solution.accDec.t_(3) = solution.accDec.t_(2);
+		solution.accDec.t_(4) = solution.accDec.t_(3) + (solution.accDec.v_(3) - v_f) / a;
 		
-	else % Acc/dec profile saturated at v_max
-		solution.accDec.move = PATH_ACC_DEC_SATURATED;
+	else % Saturated
+		solution.accDec.move = PATH_MOVE_ACCDECSATURATED;
 		
-		% Determine time at set velocity
+		% Compute time at v_max
 		dt_12 = (dx - dx_u) / v_max;
-		solution.accDec.v(3) = v_max;
-		solution.accDec.v(2) = v_max;
-		solution.accDec.t(2) = (v_max - v_0) / a;
-		solution.accDec.t(3) = (v_max - v_0) / a + dt_12;
-		solution.accDec.t(4) = (v_max - v_0) / a + dt_12 + (v_max - v_f) / a;
-		
-	end % Vmax distance threshold?
+		solution.accDec.v_(3) = v_max;
+		solution.accDec.v_(2) = v_max;
+		solution.accDec.t_(2) = (v_max - v_0) / a;
+		solution.accDec.t_(3) = solution.accDec.t_(2) + dt_12;
+		solution.accDec.t_(4) = solution.accDec.t_(3) + (v_max - v_f) / a;
+	end 
 	
-	% Determine the time maximizing profile
+	% Time-maximizing profile
 	dx_l = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * a);
-	if dx < dx_l % Dec/acc profile with dip
-		solution.decAcc.move = PATH_DEC_ACC_PEAK;
+	if dx < dx_l % Peak (dip)
+		solution.decAcc.move = PATH_MOVE_DECACCPEAK;
 		
-		% Determine the dip velocity
-		solution.decAcc.v(2) = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * a);
-		solution.decAcc.v(3) = solution.decAcc.v(2);
-		solution.decAcc.t(2) = (v_0 - solution.decAcc.v(2)) / a;
-		solution.decAcc.t(3) = (v_0 - solution.decAcc.v(2)) / a;
-		solution.decAcc.t(4) = (v_0 - solution.decAcc.v(2)) / a + (v_f - solution.decAcc.v(3)) / a;
+		% Compute v_12
+		solution.decAcc.v_(2) = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * a);
+		solution.decAcc.v_(3) = solution.decAcc.v_(2);
+		solution.decAcc.t_(2) = (v_0 - solution.decAcc.v_(2)) / a;
+		solution.decAcc.t_(3) = solution.decAcc.t_(2);
+		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (v_f - solution.decAcc.v_(3)) / a;
 		
-	else % Dec/acc profile saturated at v_min
+	else % Saturated
 		solution.decAcc.move = PATH_DEC_ACC_SATURATED;
 		
-		% Determine the time at set velocity
+		% Compute time at v_min
 		dt_12 = (dx - dx_l) / v_min;
-		solution.decAcc.v(2) = v_min;
-		solution.decAcc.v(3) = v_min;
-		solution.decAcc.t(2) = (v_0 - v_min) / a;
-		solution.decAcc.t(3) = (v_0 - v_min) / a + dt_12;
-		solution.decAcc.t(4) = (v_0 - v_min) / a + dt_12 + (v_f - v_min) / a;
-		
-	end % Vmin distance threshold?
+		solution.decAcc.v_(2) = v_min;
+		solution.decAcc.v_(3) = v_min;
+		solution.decAcc.t_(2) = (v_0 - v_min) / a;
+		solution.decAcc.t_(3) = solution.decAcc.t_(2) + dt_12;
+		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (v_f - v_min) / a;
+	end 
 	
 	% Set solution
-	solution.accDec.v(1) = v_0;
-	solution.accDec.v(4) = v_f;
-	solution.decAcc.v(1) = v_0;
-	solution.decAcc.v(4) = v_f;
-	solution.dt_tilde = solution.decAcc.t(4) - solution.accDec.t(4);
+	solution.accDec.v_(1) = v_0;
+	solution.accDec.v_(4) = v_f;
+	solution.decAcc.v_(1) = v_0;
+	solution.decAcc.v_(4) = v_f;
+	solution.dt_tilde = solution.decAcc.t_(4) - solution.accDec.t_(4);
 	valid = true;
 	
 	if printResult
-		printf("PathTimeDiff call: Time diff %.3f - %.3f = %.3f, Moves %d, %d\n", solution.decAcc.t(4), solution.accDec.t(4), solution.dt_tilde, solution.accDec.move, solution.decAcc.move);
+		printf("PathTimeDiff call: Time diff %.3f - %.3f = %.3f s, Moves %s, %s\n", solution.decAcc.t_(4), solution.accDec.t_(4), solution.dt_tilde, GetMove(solution.accDec.move), GetMove(solution.decAcc.move));
 	end
 	
-end % Function
+end % Function definition

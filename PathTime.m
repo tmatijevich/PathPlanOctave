@@ -36,7 +36,6 @@
 %   Tyler Matijevich
 %
 
-
 function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Reference global variables
 	run GlobalVar;
@@ -65,8 +64,7 @@ function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult
 	elseif dx < (abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a))
 		printf("PathTime call failed: Distance %.3f u subceeds minimum %.3f u\n", dx, abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a)); 
 		return;
-		
-	end % Requirements
+	end
 	
 	% There is no time advantage to decelerating below the final velocity, therefore only Acc/Dec profiles will be considered
 	dx_u = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
@@ -75,30 +73,29 @@ function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult
 	if dx < dx_u % Peak
 		solution.move = PATH_MOVE_ACCDECPEAK;
 		
-		% Determine the peak velocity
+		% Compute peak velocity
 		v_p = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
 		
-		% Set the solution
+		% Set solution
 		solution.t_(2) = (v_p - v_0) / a;
-		solution.t_(3) = (v_p - v_0) / a;
-		solution.t_(4) = (v_p - v_0) / a + (v_p - v_f) / a;
+		solution.t_(3) = solution.t_(2);
+		solution.t_(4) = solution.t_(3) + (v_p - v_f) / a;
 		solution.v_(2) = v_p;
 		solution.v_(3) = v_p;
 		
 	else % Saturated
 		solution.move = PATH_MOVE_ACCDECSATURATED;
 		
-		% Determine the time at v_max
+		% Compute time at v_max
 		t_12 = (dx - dx_u) / v_max;
 		
-		% Set the solution
+		% Set solution
 		solution.t_(2) = (v_max - v_0) / a;
-		solution.t_(3) = (v_max - v_0) / a + t_12;
-		solution.t_(4) = (v_max - v_0) / a + t_12 + (v_max - v_f) / a;
+		solution.t_(3) = solution.t_(2) + t_12;
+		solution.t_(4) = solution.t_(3) + (v_max - v_f) / a;
 		solution.v_(2) = v_max;
 		solution.v_(3) = v_max;
-		
-	end % Peak movement?
+	end 
 	
 	% Set remaining solution
 	solution.dx 	= dx;
