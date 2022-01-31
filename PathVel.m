@@ -134,14 +134,16 @@ function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printRes
 		if !rootsValid
 			printf("PathVel call failed: Invalid roots solution for move %s\n", GetMove(solution.move));
 			return;
+		end
 		
-		if solution.move == PATH_ACC_DEC_SATURATED
+		if solution.move == PATH_MOVE_ACCDECSATURATED
 			solution.v_(2) = min(rootsSolution.r_1, rootsSolution.r_2);
 		else
 			solution.v_(2) = max(rootsSolution.r_1, rootsSolution.r_2);
 		end
 	end
 	
+	% Set remaining solution
 	solution.dx 	= dx;
 	solution.v_(1) 	= v_0;
 	solution.v_(3) 	= solution.v_(2);

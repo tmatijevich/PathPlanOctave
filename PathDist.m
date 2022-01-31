@@ -73,15 +73,15 @@ function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult
 	if dt < dt_u % Peak
 		solution.move = PATH_MOVE_ACCDECPEAK;
 		
-		% Compute peak velocity
-		v_p = (dt * a + v_0 + v_f) / 2.0;
+		% Compute intermediate velocity
+		v_12 = (dt * a + v_0 + v_f) / 2.0;
 		
 		% Set solution
-		solution.dx = (2.0 * v_p ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
-		solution.t(2) = (v_p - v_0) / a;
+		solution.dx = (2.0 * v_12 ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a);
+		solution.t(2) = (v_12 - v_0) / a;
 		solution.t(3) = solution.t(2);
-		solution.v(2) = v_p;
-		solution.v(3) = v_p;
+		solution.v(2) = v_12;
+		solution.v(3) = v_12;
 		
 	else % Saturated
 		solution.move = PATH_MOVE_ACCDECSATURATED;
@@ -101,6 +101,7 @@ function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult
 	solution.t(4) 	= dt;
 	solution.v(1) 	= v_0;
 	solution.v(4) 	= v_f;
+	solution.dx 	= (solution.v_(2) ^ 2 - solution.v_(1) ^ 2) / (2.0 * a) + (solution.t_(3) - solution.t_(2)) * solution.v_(2) + (solution.v_(3) ^ 2 - solution.v_(4) ^ 2) / (2.0 * a);
 	solution.a 		= a;
 	valid = true;
 	
