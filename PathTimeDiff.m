@@ -50,54 +50,22 @@ function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printRe
 				"dt_tilde", 0.0);
 	valid = false;
 	
-	% Input requirements
-	% #1 Plausible velocity limits
-	if v_min < 0.0 || v_max <= v_min
-		printf("PathTimeDiff call failed: Implausible velocity limits [%.3f, %.3f] u/s\n", v_min, v_max); 
+	% Call PathTime for fastest path, checks inputs
+	[timeSolution, timeValid] = PathTime(dx, v_0, v_f, v_min, v_max, a, false);
+	if !timeValid 
 		return;
-	
-	% #2 Valid endpoint velocities
-	elseif v_0 < v_min || v_max < v_0 || v_f < v_min || v_max < v_f
-		printf("PathTimeDiff call failed: Endpoint velocities %.3f, %.3f u/s exceed limits [%.3f, %.3f] u/s\n", v_0, v_f, v_min, v_max); 
-		return;
-	
-	% #3 Positive inputs
-	elseif dx <= 0.0 || a <= 0.0
-		printf("PathTimeDiff call failed: Distance %.3f u or acceleration %.3f u/s^2 non-positive\n", dx, a); 
-		return;
-		
-	% #4 Plausible move
-	elseif dx < (abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a))
-		printf("PathTimeDiff call failed: Distance %.3f u subceeds minimum %.3f u\n", dx, abs(v_0 ^ 2 - v_f ^ 2) / (2.0 * a)); 
-		return;
-	end
-	
-	% Time-minimizing profile
-	dx_u = (2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2) / (2.0 * a); % Distance at maximum saturation limit
-	if dx < dx_u % Peak
-		solution.accDec.move = PATH_MOVE_ACCDECPEAK;
-		
-		% Compute v_12
-		solution.accDec.v_(2) = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
-		solution.accDec.v_(3) = solution.accDec.v_(2);
-		solution.accDec.t_(2) = (solution.accDec.v_(2) - v_0) / a;
-		solution.accDec.t_(3) = solution.accDec.t_(2);
-		solution.accDec.t_(4) = solution.accDec.t_(3) + (solution.accDec.v_(3) - v_f) / a;
-		
-	else % Saturated
-		solution.accDec.move = PATH_MOVE_ACCDECSATURATED;
-		
-		% Compute time at v_max
-		dt_12 = (dx - dx_u) / v_max;
-		solution.accDec.v_(3) = v_max;
-		solution.accDec.v_(2) = v_max;
-		solution.accDec.t_(2) = (v_max - v_0) / a;
-		solution.accDec.t_(3) = solution.accDec.t_(2) + dt_12;
-		solution.accDec.t_(4) = solution.accDec.t_(3) + (v_max - v_f) / a;
-	end 
+
+	% Copy time-minimizing profile
+	solution.accDec.move = timeSolution.move;
+	solution.accDec.v(2) = timeSolution.v(2);
+	solution.accDec.v(3) = timeSolution.v(3);
+	solution.accDec.t(2) = timeSolution.t(2);
+	solution.accDec.t(3) = timeSolution.t(3);
+	solution.accDec.t(4) = timeSolution.t(4);
 	
 	% Time-maximizing profile
 	dx_l = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * a);
+	% Saturated?
 	if dx < dx_l % Peak (dip)
 		solution.decAcc.move = PATH_MOVE_DECACCPEAK;
 		
@@ -120,11 +88,15 @@ function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printRe
 		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (v_f - v_min) / a;
 	end 
 	
-	% Set solution
-	solution.accDec.v_(1) = v_0;
-	solution.accDec.v_(4) = v_f;
-	solution.decAcc.v_(1) = v_0;
-	solution.decAcc.v_(4) = v_f;
+	% Set remaining solution
+	solution.accDec.dx 		= dx;
+	solution.accDec.v_(1) 	= v_0;
+	solution.accDec.v_(4) 	= v_f;
+	solution.accDec.a 		= a;
+	solution.decAcc.dx 		= dx;
+	solution.decAcc.v_(1) 	= v_0;
+	solution.decAcc.v_(4) 	= v_f;
+	solution.decAcc.a 		= a;
 	solution.dt_tilde = solution.decAcc.t_(4) - solution.accDec.t_(4);
 	valid = true;
 	
