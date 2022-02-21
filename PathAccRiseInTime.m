@@ -1,12 +1,12 @@
 %!octave
 
 % FUNCTION NAME:
-%   PathAccInTime
+%   PathAccRiseInTime
 %
 % INPUT:
 %   dt_tilde - Difference in time durations [s]
 %   dx       - Distance [Units]
-%   v_0      - Initiali velocity [Units/s]
+%   v_1      - Velocity point #1 (rise velocity) [Units/s]
 %   v_f      - Final velocity [Units/s]
 %   v_min    - Minimum velocity [Units/s]
 %   v_max    - Maximum velocity [Units/s]
@@ -37,7 +37,7 @@
 %   Tyler Matijevich
 %
 
-function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max, printResult = false)
+function [solution, valid] = PathAccRiseInTime(dt_tilde, dx, v_1, v_f, v_min, v_max, printResult = false)
 	% Reference global variables
 	run GlobalVar;
 
@@ -50,30 +50,30 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	% Input requirements
 	% #1 Plausible velocity limits
 	if v_min < 0.0 || v_max <= v_min
-		printf("PathAccInTime call failed: Implausible velocity limits [%.3f, %.3f]\n", v_min, v_max); 
+		printf("PathAccRiseInTime call failed: Implausible velocity limits [%.3f, %.3f]\n", v_min, v_max); 
 		return;
 	
 	% #2 Valid endpoint velocities
-	elseif v_0 < v_min || v_max < v_0 || v_f < v_min || v_max < v_f
-		printf("PathAccInTime call failed: Endpoint velocities %.3f, %.3f exceed limits [%.3f, %.3f]\n", v_0, v_f, v_min, v_max); 
+	elseif v_1 < v_min || v_max < v_1 || v_f < v_min || v_max < v_f
+		printf("PathAccRiseInTime call failed: Endpoint velocities %.3f, %.3f exceed limits [%.3f, %.3f]\n", v_1, v_f, v_min, v_max); 
 		return;
 	
 	% #3 Positive inputs
 	elseif dt_tilde <= 0.0 || dx <= 0.0
-		printf("PathAccInTime call failed: Time difference %.3f s or distance %.3f non-positive\n", dt_tilde, dx); 
+		printf("PathAccRiseInTime call failed: Time difference %.3f s or distance %.3f non-positive\n", dt_tilde, dx); 
 		return;
 		
 	% #4 Plausible move
 	elseif dt_tilde >= dx / v_min - dx / v_max 
-		printf("PathAccInTime call failed: Time difference %.3f s exceeds maximum %.3f s\n", dt_tilde, dx / v_min - dx / v_max); 
+		printf("PathAccRiseInTime call failed: Time difference %.3f s exceeds maximum %.3f s\n", dt_tilde, dx / v_min - dx / v_max); 
 		return;
 	end
 
 	% Computation reduction constants
-	c_dt_u = 2.0 * v_max - v_0 - v_f;
-	c_dx_u = 2.0 * v_max ^ 2 - v_0 ^ 2 - v_f ^ 2;
-	c_dt_l = v_0 + v_f - 2.0 * v_min;
-	c_dx_l = v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2;
+	c_dt_u = 2.0 * v_max - v_f;
+	c_dx_u = 2.0 * v_max ^ 2 - v_f ^ 2;
+	c_dt_l = 2.0 * v_1 + v_f - 2.0 * v_min;
+	c_dx_l = 2.0 * v_1 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2;
 
 	% Saturated acceleration limits
 	a_u = c_dx_u / (2.0 * dx); % AccDec, a > a_u causes saturation
@@ -86,20 +86,20 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	% Time durations at alternative path saturation limit
 	if a_u > a_l
 		% AccDec path is not saturated at a_l
-		v_12 = sqrt(dx * a_l + (v_0 ^ 2 + v_f ^ 2) / 2.0);
-		dt_l_hat = (2.0 * v_12 - v_0 - v_f) / a_l;
+		v_23 = sqrt(dx * a_l + v_f ^ 2 / 2.0);
+		dt_l_hat = (2.0 * v_23 - v_f) / a_l;
 
 		% DecAcc path is saturated at a_u
-		dt_12 = (dx - c_dx_l / (2.0 * a_u)) / v_min;
-		dt_u_hat = c_dt_l / a_u + dt_12;
+		dt_23 = (dx - c_dx_l / (2.0 * a_u)) / v_min;
+		dt_u_hat = c_dt_l / a_u + dt_23;
 	else
 		% AccDec path is saturated at a_l
-		dt_12 = (dx - c_dx_u / (2.0 * a_l)) / v_max;
-		dt_l_hat = c_dt_u / a_l + dt_12;
+		dt_23 = (dx - c_dx_u / (2.0 * a_l)) / v_max;
+		dt_l_hat = c_dt_u / a_l + dt_23;
 
 		% DecAcc path is not saturated at a_u
-		v_12 = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * a_u);
-		dt_u_hat = (v_0 + v_f - 2.0 * v_12) / a_u;
+		v_23 = sqrt((2.0 * v_1 ^ 2 + v_f ^ 2) / 2.0 - dx * a_u);
+		dt_u_hat = (2.0 * v_1 + v_f - 2.0 * v_23) / a_u;
 	end
 
 	% Saturated time difference limits
@@ -127,8 +127,8 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 		solution.accDec.move = PATH_MOVE_ACCDECPEAK;
 		solution.decAcc.move = PATH_MOVE_DECACCSATURATED;
 
-		c_1 = (v_0 ^ 2 + v_f ^ 2) / 2.0;
-		c_2 = c_dt_l - c_dx_l / (2.0 * v_min) + v_0 + v_f;
+		c_1 = v_f ^ 2 / 2.0;
+		c_2 = c_dt_l - c_dx_l / (2.0 * v_min) + v_f;
 		c_3 = dt_tilde - (dx / v_min);
 		p_2 = c_3 ^ 2;
 		p_1 = -4.0 * dx - 2.0 * c_2 * c_3;
@@ -141,8 +141,8 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 		solution.accDec.move = PATH_MOVE_ACCDECSATURATED;
 		solution.decAcc.move = PATH_MOVE_DECACCPEAK;
 
-		c_1 = (v_0 ^ 2 + v_f ^ 2) / 2.0;
-		c_2 = -c_dt_u + c_dx_u / (2.0 * v_max) + v_0 + v_f;
+		c_1 = (2.0 * v_1 ^ 2 + v_f ^ 2) / 2.0;
+		c_2 = -c_dt_u + c_dx_u / (2.0 * v_max) + 2.0 * v_1 + v_f;
 		c_3 = dt_tilde + (dx / v_max);
 		p_2 = c_3 ^ 2;
 		p_1 = 4.0 * dx - 2.0 * c_2 * c_3;
@@ -152,7 +152,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 
 	%4 
 	else
-		printf("PathAccInTime call warning: Optimized solution requires higher order solver. Using sub-optimal acceleration\n");
+		printf("PathAccRiseInTime call warning: Optimized solution requires higher order solver. Using sub-optimal acceleration\n");
 		if dt_u_tilde > dt_l_tilde
 			solution.accDec.move = PATH_MOVE_ACCDECPEAK;
 			solution.decAcc.move = PATH_MOVE_DECACCSATURATED;
@@ -173,7 +173,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 
 		if !rootsValid
-			printf("PathAccInTime call failed: Unable to find roots\n");
+			printf("PathAccRiseInTime call failed: Unable to find roots\n");
 			return;
 		end
 
@@ -183,45 +183,47 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 
 	% Set solution
 	solution.accDec.dx = dx;
-	solution.accDec.v_(1) = v_0;
-	solution.accDec.v_(4) = v_f;
+	solution.accDec.v_(2) = v_1;
+	solution.accDec.v_(5) = v_f;
+	solution.accDec.t_(2) = v_1 / solution.accDec.a;
 	if solution.accDec.move == PATH_MOVE_ACCDECPEAK
-		v_12 = sqrt(dx * solution.accDec.a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
-		solution.accDec.v_(2) = v_12;
-		solution.accDec.v_(3) = v_12;
-		solution.accDec.t_(2) = (v_12 - v_0) / solution.accDec.a;
-		solution.accDec.t_(3) = solution.accDec.t_(2);
-		solution.accDec.t_(4) = solution.accDec.t_(3) + (v_12 - v_f) / solution.accDec.a;
+		v_23 = sqrt(dx * solution.accDec.a + v_f ^ 2 / 2.0);
+		solution.accDec.v_(3) = v_23;
+		solution.accDec.v_(4) = v_23;
+		solution.accDec.t_(3) = v_23 / solution.accDec.a;
+		solution.accDec.t_(4) = solution.accDec.t_(3);
+		solution.accDec.t_(5) = solution.accDec.t_(4) + (v_23 - v_f) / solution.accDec.a;
 	else
-		solution.accDec.v_(2) = v_max;
 		solution.accDec.v_(3) = v_max;
-		solution.accDec.t_(2) = (v_max - v_0) / solution.accDec.a;
-		solution.accDec.t_(3) = solution.accDec.t_(2) + (dx - c_dx_u / (2.0 * solution.accDec.a)) / v_max;
-		solution.accDec.t_(4) = solution.accDec.t_(3) + (v_max - v_f) / solution.accDec.a;
+		solution.accDec.v_(4) = v_max;
+		solution.accDec.t_(3) = v_max / solution.accDec.a;
+		solution.accDec.t_(4) = solution.accDec.t_(3) + (dx - c_dx_u / (2.0 * solution.accDec.a)) / v_max;
+		solution.accDec.t_(5) = solution.accDec.t_(4) + (v_max - v_f) / solution.accDec.a;
 	end
 
 	solution.decAcc.dx = dx;
-	solution.decAcc.v_(1) = v_0;
-	solution.decAcc.v_(4) = v_f;
+	solution.decAcc.v_(2) = v_1;
+	solution.decAcc.v_(5) = v_f;
+	solution.decAcc.t_(2) = v_1 / solution.decAcc.a;
 	if solution.decAcc.move == PATH_MOVE_DECACCPEAK
-		v_12 = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * solution.decAcc.a);
-		solution.decAcc.v_(2) = v_12;
-		solution.decAcc.v_(3) = v_12;
-		solution.decAcc.t_(2) = (v_0 - v_12) / solution.decAcc.a;
-		solution.decAcc.t_(3) = solution.decAcc.t_(2);
-		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (v_f - v_12) / solution.decAcc.a;
+		v_23 = sqrt((2.0 * v_1 ^ 2 + v_f ^ 2) / 2.0 - dx * solution.decAcc.a);
+		solution.decAcc.v_(3) = v_23;
+		solution.decAcc.v_(4) = v_23;
+		solution.decAcc.t_(3) = solution.decAcc.t_(2) + (v_1 - v_23) / solution.decAcc.a;
+		solution.decAcc.t_(4) = solution.decAcc.t_(3);
+		solution.decAcc.t_(5) = solution.decAcc.t_(4) + (v_f - v_23) / solution.decAcc.a;
 	else
-		solution.decAcc.v_(2) = v_min;
 		solution.decAcc.v_(3) = v_min;
-		solution.decAcc.t_(2) = (v_0 - v_min) / solution.decAcc.a;
-		solution.decAcc.t_(3) = solution.decAcc.t_(2) + (dx - c_dx_l / (2.0 * solution.decAcc.a)) / v_min;
-		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (v_f - v_min) / solution.decAcc.a;
+		solution.decAcc.v_(4) = v_min;
+		solution.decAcc.t_(3) = solution.decAcc.t_(2) + (v_1 - v_min) / solution.decAcc.a;
+		solution.decAcc.t_(4) = solution.decAcc.t_(3) + (dx - c_dx_l / (2.0 * solution.decAcc.a)) / v_min;
+		solution.decAcc.t_(5) = solution.decAcc.t_(4) + (v_f - v_min) / solution.decAcc.a;
 	end
 
 	valid = true;
 
 	if printResult
-		printf("PathAccInTime call: Acc %.3f u/s^2 Move %s & %s\n", solution.accDec.a, GetMove(solution.accDec.move), GetMove(solution.decAcc.move));
+		printf("PathAccRiseInTime call: Acc %.3f u/s^2 Move %s & %s\n", solution.accDec.a, GetMove(solution.accDec.move), GetMove(solution.decAcc.move));
 	end
 
 end % Function
