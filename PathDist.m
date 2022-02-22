@@ -38,7 +38,7 @@
 
 function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Reference global variables
-	run GlobalVar;
+	run PathVar;
 	
 	% Reset solution
 	solution = struct("t_", [0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE);
@@ -71,7 +71,7 @@ function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult
 	
 	% Saturated?
 	if dt < dt_u % Peak
-		solution.move = PATH_MOVE_ACCDECPEAK;
+		solution.move = PATH_MOVE_ACCDEC;
 		
 		% Compute intermediate velocity
 		v_12 = (dt * a + v_0 + v_f) / 2.0;
@@ -106,7 +106,7 @@ function [solution, valid] = PathDist(dt, v_0, v_f, v_min, v_max, a, printResult
 	valid = true;
 	
 	if printResult
-		printf("PathDist call: Dist %.3f u, Vel %.3f u/s Move %s\n", solution.dx, solution.v(2), GetMove(solution.move));
+		printf("PathDist call: Dist %.3f u, Vel %.3f u/s Move %s\n", solution.dx, solution.v(2), PathMove(solution.move));
 	end
 	
 end % Function definition

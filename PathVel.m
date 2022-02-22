@@ -39,7 +39,7 @@
 
 function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Reference global variables
-	run GlobalVar;
+	run PathVar;
 	
 	% Reset solution
 	solution = struct("t_", [0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE);
@@ -132,7 +132,7 @@ function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printRes
 		[rootsSolution, rootsValid] = PathRoots(p_2, p_1, p_0);
 		
 		if !rootsValid
-			printf("PathVel call failed: Invalid roots solution for move %s\n", GetMove(solution.move));
+			printf("PathVel call failed: Invalid roots solution for move %s\n", PathMove(solution.move));
 			return;
 		end
 		
@@ -155,7 +155,7 @@ function [solution, valid] = PathVel(dt, dx, v_0, v_f, v_min, v_max, a, printRes
 	valid = true;
 	
 	if printResult
-		printf("PathVel call: Vel %.3f u/s, Move %s\n", solution.v_(2), GetMove(solution.move));
+		printf("PathVel call: Vel %.3f u/s, Move %s\n", solution.v_(2), PathMove(solution.move));
 	end
 	
 end % Function defintion

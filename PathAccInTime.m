@@ -39,7 +39,7 @@
 
 function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max, printResult = false)
 	% Reference global variables
-	run GlobalVar;
+	run PathVar;
 
 	% Reset solution
 	solution = struct("accDec", struct("t_", [0.0, 0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE),
@@ -124,7 +124,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 
 	% 2
 	elseif dt_tilde < dt_u_tilde && dt_tilde >= dt_l_tilde
-		solution.accDec.move = PATH_MOVE_ACCDECPEAK;
+		solution.accDec.move = PATH_MOVE_ACCDEC;
 		solution.decAcc.move = PATH_MOVE_DECACCSATURATED;
 
 		c_1 = (v_0 ^ 2 + v_f ^ 2) / 2.0;
@@ -139,7 +139,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	% 3
 	elseif dt_tilde >= dt_u_tilde && dt_tilde < dt_l_tilde
 		solution.accDec.move = PATH_MOVE_ACCDECSATURATED;
-		solution.decAcc.move = PATH_MOVE_DECACCPEAK;
+		solution.decAcc.move = PATH_MOVE_DECACC;
 
 		c_1 = (v_0 ^ 2 + v_f ^ 2) / 2.0;
 		c_2 = -c_dt_u + c_dx_u / (2.0 * v_max) + v_0 + v_f;
@@ -154,14 +154,14 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	else
 		printf("PathAccInTime call warning: Optimized solution requires higher order solver. Using sub-optimal acceleration\n");
 		if dt_u_tilde > dt_l_tilde
-			solution.accDec.move = PATH_MOVE_ACCDECPEAK;
+			solution.accDec.move = PATH_MOVE_ACCDEC;
 			solution.decAcc.move = PATH_MOVE_DECACCSATURATED;
 			
 			solution.accDec.a = a_l;
 			solution.decAcc.a = a_l;
 		else
 			solution.accDec.move = PATH_MOVE_ACCDECSATURATED;
-			solution.decAcc.move = PATH_MOVE_DECACCPEAK;
+			solution.decAcc.move = PATH_MOVE_DECACC;
 			
 			solution.accDec.a = a_u;
 			solution.decAcc.a = a_u;
@@ -185,7 +185,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	solution.accDec.dx = dx;
 	solution.accDec.v_(1) = v_0;
 	solution.accDec.v_(4) = v_f;
-	if solution.accDec.move == PATH_MOVE_ACCDECPEAK
+	if solution.accDec.move == PATH_MOVE_ACCDEC
 		v_12 = sqrt(dx * solution.accDec.a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
 		solution.accDec.v_(2) = v_12;
 		solution.accDec.v_(3) = v_12;
@@ -203,7 +203,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	solution.decAcc.dx = dx;
 	solution.decAcc.v_(1) = v_0;
 	solution.decAcc.v_(4) = v_f;
-	if solution.decAcc.move == PATH_MOVE_DECACCPEAK
+	if solution.decAcc.move == PATH_MOVE_DECACC
 		v_12 = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * solution.decAcc.a);
 		solution.decAcc.v_(2) = v_12;
 		solution.decAcc.v_(3) = v_12;
@@ -221,7 +221,7 @@ function [solution, valid] = PathAccInTime(dt_tilde, dx, v_0, v_f, v_min, v_max,
 	valid = true;
 
 	if printResult
-		printf("PathAccInTime call: Acc %.3f u/s^2 Move %s & %s\n", solution.accDec.a, GetMove(solution.accDec.move), GetMove(solution.decAcc.move));
+		printf("PathAccInTime call: Acc %.3f u/s^2 Move %s & %s\n", solution.accDec.a, PathMove(solution.accDec.move), PathMove(solution.decAcc.move));
 	end
 
 end % Function

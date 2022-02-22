@@ -42,7 +42,7 @@
 
 function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Reference global variables
-	run GlobalVar;
+	run PathVar;
 	
 	% Reset solution
 	solution = struct("accDec", struct("t_", [0.0, 0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE),
@@ -67,7 +67,7 @@ function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printRe
 	dx_l = (v_0 ^ 2 + v_f ^ 2 - 2.0 * v_min ^ 2) / (2.0 * a);
 	% Saturated?
 	if dx < dx_l % Peak (dip)
-		solution.decAcc.move = PATH_MOVE_DECACCPEAK;
+		solution.decAcc.move = PATH_MOVE_DECACC;
 		
 		% Compute v_12
 		solution.decAcc.v_(2) = sqrt((v_0 ^ 2 + v_f ^ 2) / 2.0 - dx * a);
@@ -101,7 +101,7 @@ function [solution, valid] = PathTimeDiff(dx, v_0, v_f, v_min, v_max, a, printRe
 	valid = true;
 	
 	if printResult
-		printf("PathTimeDiff call: Time diff %.3f - %.3f = %.3f s, Moves %s, %s\n", solution.decAcc.t_(4), solution.accDec.t_(4), solution.dt_tilde, GetMove(solution.accDec.move), GetMove(solution.decAcc.move));
+		printf("PathTimeDiff call: Time diff %.3f - %.3f = %.3f s, Moves %s, %s\n", solution.decAcc.t_(4), solution.accDec.t_(4), solution.dt_tilde, PathMove(solution.accDec.move), PathMove(solution.decAcc.move));
 	end
 	
 end % Function definition

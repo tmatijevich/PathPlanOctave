@@ -38,7 +38,7 @@
 
 function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult = false)
 	% Reference global variables
-	run GlobalVar;
+	run PathVar;
 	
 	% Reset solution
 	solution = struct("t_", [0.0, 0.0, 0.0, 0.0], "dx", 0.0, "v_", [0.0, 0.0, 0.0, 0.0], "a", 0.0, "move", PATH_MOVE_NONE);
@@ -71,7 +71,7 @@ function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult
 	
 	% Saturated?
 	if dx < dx_u % Peak
-		solution.move = PATH_MOVE_ACCDECPEAK;
+		solution.move = PATH_MOVE_ACCDEC;
 		
 		% Compute peak velocity
 		v_p = sqrt(dx * a + (v_0 ^ 2 + v_f ^ 2) / 2.0);
@@ -105,7 +105,7 @@ function [solution, valid] = PathTime(dx, v_0, v_f, v_min, v_max, a, printResult
 	valid = true;
 	
 	if printResult
-		printf("PathTime call: Time %.3f s, Vel %.3f u/s, Move %s\n", solution.t_(4), solution.v_(2), GetMove(solution.move));
+		printf("PathTime call: Time %.3f s, Vel %.3f u/s, Move %s\n", solution.t_(4), solution.v_(2), PathMove(solution.move));
 	end
 	
 end % Function definition

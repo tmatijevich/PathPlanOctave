@@ -1,15 +1,15 @@
 %!octave
 
-function [moveString] = GetMove(move)
+function [moveString] = PathMove(move)
 
-	run GlobalVar;
+	run PathVar;
 
 	switch move
-		case PATH_MOVE_DECACCPEAK 
+		case PATH_MOVE_DECACC 
 			moveString = "Dec/Acc";
 		case PATH_MOVE_DECACCSATURATED 
 			moveString = "Dec/Acc Saturated";
-		case PATH_MOVE_ACCDECPEAK
+		case PATH_MOVE_ACCDEC
 			moveString = "Acc/Dec";
 		case PATH_MOVE_ACCDECSATURATED
 			moveString = "Acc/Dec Saturated";
